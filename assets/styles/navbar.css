@@ -1,0 +1,7 @@
+.list-group-item:hover{
+    background-color: rgba(128, 128, 128, 0.00) !important;
+}
+
+.nav-link:hover{
+    background-color: rgba(128, 128, 128, 0.18) !important;
+}
