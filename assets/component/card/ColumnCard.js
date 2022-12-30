@@ -1,107 +1,68 @@
 import React from "react";
-
+import formFirstInsert from "../../forms/FormFirstInsert";
+import {ResizeLayout} from "../layout/ResizeLayout";
+import FirstViewer from "../../box/show/FirstViewer";
 
 class PrimaryCard extends React.Component {
 
     constructor(props) {
         super(props);
         this.props=props;
-        this.state = {textarea:'',select:''}
-
-        this.onChange = this.onChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
+        this.state = {textarea:'',select:'', composition: []}
+        this.handleSubmitCard = this.handleSubmitCard.bind(this)
+        this.handleCompositionRedit = this.handleCompositionRedit.bind(this)
+        //this.handleCompositionRemove = this.handleCompositionRemove.bind(this)
     }
 
-    onChange(event){
-        console.log('on change')
-        this.props.onChangeSup(event.target.name, event.target.value)
-        //this.render()
+    handleSubmitCard(snippet){
+        this.props.handleCompositionFormAdd(snippet)
+        //alert('cambia lo state della card')
+        this.setState(snippet)
     }
 
-    handleSubmit(event){
-        event.preventDefault()
-        this.props.handleCompositionFormAdd({ textarea: this.props.handle.textarea, select: this.props.handle.select })
+    handleCompositionRedit(id, type, text) {
+        // alert('dentro Composition Redit'+'---->'+id+'---->'+type+'---->'+text)
+        this.setState({handleValues:{trigger:true, textarea:text, id:id, select:type}})
     }
 
     render() {
 
+        let Form = formFirstInsert;
         let thisHandle= ''
-        const linksCardHeader = this.props.cardLinks.map((link) =>
-            <li className="nav-item" style={{fontSize: 15}} key={link.ID}>
-                <a href={link.name} className="nav-link card-anchor" data-bs-toggle="tab" onClick={this.props.onClickHandlers[link.ID]}> {link.name.replace('#','')} </a>
-            </li>
-        );
+        let peces = this.state.composition
 
-
-
-        if(this.props.handle.trigger){
+        if(this.props.handleValues.trigger){
             thisHandle= 'deve diventare form di modifica'
         }
 
-        // console.log('********') console.log(this.props) console.log('********')
-
-        // console.log('****** Column Card')
-        // console.log(this.props.modify)
-        // console.log('***')
-        // console.log(this.state)
-        // console.log('******')
-
         return(
 
-
-
             <>
-                <div className="card text-center">
-                    <div className="card-header">
-                        <ul className="nav nav-tabs card-header-tabs justify-content-center" id="myTab">
-                            {linksCardHeader}
-                        </ul>
-                    </div>
-                    <div className="card-body p-2">
+                <ResizeLayout enable ={{top:false, right:true, bottom:false, left:false, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false}}>
+                   <div className="card text-center">
+                      <div className="card-body p-2">
                         <div className="tab-content">
-                            <div className="tab-pane fade show active" id="home">
-                                <h6 className="card-title">Gestione {JSON.stringify(this.props.handle)}</h6>
+                            <div className="tab-pane active" id="home">
+                                <h6 className="card-title">Gestione
 
+                                    {JSON.stringify(this.props.handleValues)}
 
-                                    <form className="container p-0" onSubmit={this.handleSubmit}>
+                                </h6>
 
-                                        {thisHandle}
+                                <Form handleSubmitCard={this.handleSubmitCard} formValues={this.props.handleValues} onChange={this.onChange}>
 
-                                        <div className="row mb-2">
-                                            <div className="col-12 mb-2">
-                                                <select id="tipo-testo" value={this.props.handle.select} className="form-select text-center" onChange={this.onChange} name="select">
-                                                    <option value="null">Seleziona il tipo di testo</option>
-                                                    <option value="S">S</option>
-                                                    <option value="R">R</option>
-                                                    <option value="RM">RM</option>
-                                                </select>
-                                            </div>
-
-                                            <div className="col-12">
-                                                <textarea className="form-control textarea-compact p-1" onChange={this.onChange} value={this.props.handle.textarea || ""} name="textarea"/>
-                                            </div>
-                                        </div>
-
-                                        <div className="row">
-                                            <div className="col-12">
-                                                <input className={"btn btn-success"} type='submit' value="Aggiungi"/>
-                                            </div>
-                                        </div>
-                                    </form>
-
-
-                            </div>
-                            <div className="tab-pane fade" id="profile">
-                                <h6 className="card-title">Possibile menu 2</h6>
-
-                            </div>
-                            <div className="tab-pane fade" id="messages">
-                                <h6 className="card-title">Possibile menu 3</h6>
+                                </Form>
 
                             </div>
                         </div>
-                    </div>
-                </div>
+                      </div>
+                   </div>
+
+
+                    <FirstViewer peces={peces}>
+
+                    </FirstViewer>
+                </ResizeLayout>
             </>
         )
     }

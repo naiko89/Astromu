@@ -1,6 +1,6 @@
-import React from 'react';
-import { render } from "react-dom";
-import { ResizeLayout } from "../../component/layout/ResizeLayout";
+//import React from 'react';
+//import { render } from "react-dom";
+//import { ResizeLayout } from "../../component/layout/ResizeLayout";
 
 
 

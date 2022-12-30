@@ -1,7 +1,6 @@
 import React from 'react';
 import { ResizeLayout } from "../component/layout/ResizeLayout";
 import ColumnCard from "../component/card/ColumnCard";
-import FormFirstInsert from "../forms/FormFirstInsert";
 import FormSecondTemp from "../forms/FormSecondTemp";
 import FormThirdTemp from "../forms/FormThirdTemp";
 import FirstViewer from "../box/show/FirstViewer";
@@ -16,7 +15,7 @@ class Show extends  React.Component {
         const user = props.nomeUser
         this.state = {
             header: { links: [{ name:'#home', ID:0 }, { name:'#profile', ID:1 }, { name:'#messages', ID:2 }] },
-            structure: { component:'FirstViewer' },
+            layout: { component:'FirstViewer' },
             composition: [],
             handleValues:{trigger:false, textarea:'',id:'', select:'null'}
         }
@@ -25,16 +24,13 @@ class Show extends  React.Component {
 
         this.handleCompositionRedit = this.handleCompositionRedit.bind(this)
         this.handleCompositionRemove = this.handleCompositionRemove.bind(this)
-        this.onChangeSup = this.onChangeSup.bind(this)
+        //this.onChangeSup = this.onChangeSup.bind(this)
 
 
-        this.handlerFirstClick = this.handlerFirstClick.bind(this)
-        this.handlerSecondClick = this.handlerSecondClick.bind(this)
-        this.handlerThirdClick = this.handlerThirdClick.bind(this)
+        this.handlerHeaderClick = this.handlerHeaderClick.bind(this)
     }
 
     handleCompositionFormAdd(obj) {
-        alert('aggiungi'+JSON.stringify(obj))
         this.setState({ composition: [...this.state.composition, obj] })
         this.setState({handleValues:{trigger:false, textarea:'',id:'', select:'null'}})
     }
@@ -47,49 +43,49 @@ class Show extends  React.Component {
     }
 
     handleCompositionFormRedit(id) {
-        alert('modifica nel form Redit')
+        // alert('modifica nel form Redit')
     }
 
     handleCompositionRedit(id, type, text) {
-        alert('dentro Composition Redit'+'---->'+id+'---->'+type+'---->'+text)
+        // alert('dentro Composition Redit'+'---->'+id+'---->'+type+'---->'+text)
         this.setState({handleValues:{trigger:true, textarea:text, id:id, select:type}})
     }
 
-    onChangeSup(fild,value){
-        let handleValues = this.state.handleValues
-        handleValues[fild] = value
-        this.setState({handleValues: handleValues})
-    }
-
-
-
-
     /////////////////////////////////
-    handlerFirstClick = (event) => {
-        this.setState({structure:{component: 'FirstViewer'}})
-    }
-
-    handlerSecondClick = (event) => {
-        this.setState({structure:{component:'StructureFirstLevel'}})
-    }
-
-    handlerThirdClick = (event) => {
-        this.setState({structure:{component:'StructureSecondLevel'}})
+    handlerHeaderClick = (event) => {
+        switch (event.target.href){
+            case this.state.header.links[0].name :{
+                this.setState({structure:{component: 'FirstViewer'}})
+            }
+            case this.state.header.links[1].name :{
+                this.setState({structure:{component: 'SecondViewer'}})
+            }
+            case this.state.header.links[2].name :{
+                this.setState({structure:{component: 'ThirdViewer'}})
+            }
+        }
     }
 
     render() {
-        let BoxedColumnDx, boxedColumnSx, peces
+        let BoxedColumnDx, boxedColumnSx, peces, BoxedColumnListText, BoxedColumMenu
 
-         console.log('**** Show ****')
-         console.log(this.state.handleValues)
-         console.log('****')
+         // console.log('**** Show ****')
+         // console.log(this.state.handleValues)
+         // console.log('****')
 
+        const linksCardsHeader = this.state.header.links.map((link) =>
+            <li className="nav-item" style={{fontSize: 15}} key={link.ID}>
+                <a href={link.name} className="nav-link card-anchor" data-bs-toggle="tab" onClick={this.handlerHeaderClick}> {link.name.replace('#','')} </a>
+            </li>
+        );
 
-        switch (this.state.structure.component) {
+        //this.props.onClickHandlers[link.ID]
+
+        switch (this.state.layout.component) {
             case 'FirstViewer':
-                boxedColumnSx = FormFirstInsert
                 peces = this.state.composition
-                BoxedColumnDx = FirstViewer
+                BoxedColumnListText = FirstViewer
+                BoxedColumMenu = ColumnCard
                 break;
             case 'StructureFirstLevel':
                 boxedColumnSx = FormSecondTemp
@@ -104,26 +100,27 @@ class Show extends  React.Component {
 
         return (
             <div className="container-fluid m-0 p-0" style={{height: '93vh'}}>
-                <ResizeLayout enable ={{top:false, right:true, bottom:false, left:false, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false}}>
+                    <ul className="nav" id="myTab">
+                        {linksCardsHeader}
+                    </ul>
 
-                    <ColumnCard cardTitle='Titolo Show Column'
-                                cardLinks={this.state.header.links}
-                                onChangeSup={this.onChangeSup}
-                                onClickHandlers={[this.handlerFirstClick, this.handlerSecondClick,this.handlerThirdClick]}
-                                handleCompositionFormAdd={this.handleCompositionFormAdd}
-                                handleCompositionFormRedit={this.handleCompositionFormRedit}
-                                handle={this.state.handleValues}>
-                    </ColumnCard>
+                        <BoxedColumMenu cardTitle='Titolo Show Column'
+                                        cardLinks={this.state.header.links}
+                                        handleCompositionFormAdd={this.handleCompositionFormAdd}
+                                        handleCompositionFormRedit={this.handleCompositionFormRedit}
+                                        handleValues={this.state.handleValues}>
+                        </BoxedColumMenu>
 
-                    <BoxedColumnDx peces={peces}
-                                   handleCompositionRemove={this.handleCompositionRemove}
-                                   handleCompositionRedit={this.handleCompositionRedit}>
-                    </BoxedColumnDx>
-
-                </ResizeLayout>
             </div>
         );
     }
 }
 
 export default Show;
+
+/*<BoxedColumnListText peces={peces}
+                              handleCompositionRemove={this.handleCompositionRemove}
+                              handleCompositionRedit={this.handleCompositionRedit}>
+                    </BoxedColumnListText>
+
+ */
