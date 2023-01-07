@@ -17,38 +17,11 @@ class Show extends  React.Component {
             header: { links: [{ name:'#home', ID:0 }, { name:'#profile', ID:1 }, { name:'#messages', ID:2 }] },
             layout: { component:'FirstViewer' },
             composition: [],
-            handleValues:{trigger:false, textarea:'',id:'', select:'null'}
+            handleValues:{trigger:false, textarea:'',id:'', select:false}
         }
-        this.handleCompositionFormAdd = this.handleCompositionFormAdd.bind(this)
-        this.handleCompositionFormRedit = this.handleCompositionFormRedit.bind(this)
 
-        this.handleCompositionRedit = this.handleCompositionRedit.bind(this)
-        this.handleCompositionRemove = this.handleCompositionRemove.bind(this)
         //this.onChangeSup = this.onChangeSup.bind(this)
-
-
         this.handlerHeaderClick = this.handlerHeaderClick.bind(this)
-    }
-
-    handleCompositionFormAdd(obj) {
-        this.setState({ composition: [...this.state.composition, obj] })
-        this.setState({handleValues:{trigger:false, textarea:'',id:'', select:'null'}})
-    }
-
-    handleCompositionRemove(id) {
-        this.setState((prevState) => ({
-            composition: update(prevState.composition, {$splice: [[id, 1]]})
-        }))
-        this.setState({handleValues:{trigger:false, textarea:'',id:'', select:'null'}})
-    }
-
-    handleCompositionFormRedit(id) {
-        // alert('modifica nel form Redit')
-    }
-
-    handleCompositionRedit(id, type, text) {
-        // alert('dentro Composition Redit'+'---->'+id+'---->'+type+'---->'+text)
-        this.setState({handleValues:{trigger:true, textarea:text, id:id, select:type}})
     }
 
     /////////////////////////////////
@@ -84,16 +57,13 @@ class Show extends  React.Component {
         switch (this.state.layout.component) {
             case 'FirstViewer':
                 peces = this.state.composition
-                BoxedColumnListText = FirstViewer
                 BoxedColumMenu = ColumnCard
                 break;
             case 'StructureFirstLevel':
                 boxedColumnSx = FormSecondTemp
-                BoxedColumnDx = SecondViewer
                 break;
             case 'StructureSecondLevel':
                 boxedColumnSx = FormThirdTemp
-                BoxedColumnDx= ThirdViewer
                 break;
         }
 
@@ -103,24 +73,10 @@ class Show extends  React.Component {
                     <ul className="nav" id="myTab">
                         {linksCardsHeader}
                     </ul>
-
-                        <BoxedColumMenu cardTitle='Titolo Show Column'
-                                        cardLinks={this.state.header.links}
-                                        handleCompositionFormAdd={this.handleCompositionFormAdd}
-                                        handleCompositionFormRedit={this.handleCompositionFormRedit}
-                                        handleValues={this.state.handleValues}>
-                        </BoxedColumMenu>
-
+                        <BoxedColumMenu cardTitle='Titolo Show Column'> </BoxedColumMenu>
             </div>
         );
     }
 }
 
 export default Show;
-
-/*<BoxedColumnListText peces={peces}
-                              handleCompositionRemove={this.handleCompositionRemove}
-                              handleCompositionRedit={this.handleCompositionRedit}>
-                    </BoxedColumnListText>
-
- */

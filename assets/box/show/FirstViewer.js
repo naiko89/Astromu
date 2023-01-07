@@ -27,6 +27,7 @@ class FirstViewer extends React.Component{
                 <div className={"container-fluid"}>
                     <div className={"row"}>
                         <ul className="list-group col-5 ms-1">
+
                             {Object.entries(this.props.peces).map(([key, value]) =>
                                 <li className={"list-group-item border-0 p-0 pt-1"} key={key}>
                                     <div className="card">
