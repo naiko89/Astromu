@@ -2,7 +2,7 @@ import React from 'react';
 const $ = require('jquery');
 
 
-class FirstViewer extends React.Component{
+class CompositionViewer extends React.Component{
 
     constructor(props) {
         super(props);
@@ -61,4 +61,4 @@ class FirstViewer extends React.Component{
     )}
 }
 
-export default FirstViewer
+export default CompositionViewer

@@ -1,7 +1,7 @@
 import React from "react";
 import formFirstInsert from "../../forms/FormFirstInsert";
 import {ResizeLayout} from "../layout/ResizeLayout";
-import FirstViewer from "../../box/show/FirstViewer";
+import CompositionViewer from "../../box/show/CompositionViewer";
 import update from "immutability-helper";
 
 class PrimaryCard extends React.Component {
@@ -75,10 +75,10 @@ class PrimaryCard extends React.Component {
                         </div>
                       </div>
                    </div>
-                    <FirstViewer peces={peces}
+                    <CompositionViewer peces={peces}
                                  handleCompositionRemove={this.handleCompositionRemove}
                                  handleCompositionRedit={this.handleCompositionRedit}>
-                    </FirstViewer>
+                    </CompositionViewer>
                 </ResizeLayout>
             </>
         )

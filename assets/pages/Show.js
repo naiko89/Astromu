@@ -1,11 +1,8 @@
 import React from 'react';
-import { ResizeLayout } from "../component/layout/ResizeLayout";
 import ColumnCard from "../component/card/ColumnCard";
+import CompositionsList from "../component/lists/CompositionsList"
 import FormSecondTemp from "../forms/FormSecondTemp";
 import FormThirdTemp from "../forms/FormThirdTemp";
-import FirstViewer from "../box/show/FirstViewer";
-import SecondViewer from "../box/show/SecondViewer";
-import ThirdViewer from "../box/show/ThirdViewer";
 
 import update from 'immutability-helper';
 
@@ -40,7 +37,7 @@ class Show extends  React.Component {
     }
 
     render() {
-        let BoxedColumnDx, boxedColumnSx, peces, BoxedColumnListText, BoxedColumMenu
+        let Boxed, peces
 
          // console.log('**** Show ****')
          // console.log(this.state.handleValues)
@@ -57,26 +54,33 @@ class Show extends  React.Component {
         switch (this.state.layout.component) {
             case 'FirstViewer':
                 peces = this.state.composition
-                BoxedColumMenu = ColumnCard
+                Boxed = CompositionsList
                 break;
             case 'StructureFirstLevel':
-                boxedColumnSx = FormSecondTemp
+                Boxed = FormSecondTemp
                 break;
             case 'StructureSecondLevel':
-                boxedColumnSx = FormThirdTemp
+                Boxed = FormThirdTemp
                 break;
         }
 
 
         return (
             <div className="container-fluid m-0 p-0" style={{height: '93vh'}}>
-                    <ul className="nav" id="myTab">
-                        {linksCardsHeader}
-                    </ul>
-                        <BoxedColumMenu cardTitle='Titolo Show Column'> </BoxedColumMenu>
+
+                <Boxed></Boxed>
+
             </div>
         );
     }
 }
 
 export default Show;
+
+
+//<ul className="nav" id="myTab">
+//{linksCardsHeader}
+//</ul>
+
+
+// <BoxedColumMenu cardTitle='Titolo Show Column'> </BoxedColumMenu>
