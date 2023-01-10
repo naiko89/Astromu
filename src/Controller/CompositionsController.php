@@ -23,16 +23,26 @@ class CompositionsController extends AbstractController
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
+                dump('sei dentro il get');
+                if($request->get('body')===null){
+                    dump('sei dentro null');
+                }
+                else{
+                    dump('è una richiesta filtrata');
+                }
+
                 // Restituisci la lista delle composizioni
                 break;
             case 'POST':
                 // Crea una nuova composizione
+                dump('sei in post aggiungi una o più');
                 break;
             case 'PUT':
-                dump('sei nel PUT');
+                dump('sei nel PUT modifica una');
                 // Aggiorna una composizione esistente
                 break;
             case 'DELETE':
+                dump('elimina una o forse più vediamo');
                 // Elimina una composizione
                 break;
         }

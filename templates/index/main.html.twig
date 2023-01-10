@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nome dell appWeb{% endblock %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('app', null ,'appConfig') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app', null ,'appConfig') }}
+{% endblock %}
+
+
+{% block main %} <div id="app" data-user="{{ user }}" data-token=""></div> {% endblock %}
+
+
+

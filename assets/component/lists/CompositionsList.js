@@ -1,28 +1,25 @@
 import React from "react";
 
-function fetchPage(page) {
-
-    alert(JSON.stringify({title: 'Nuovo titolo', author: 'John Doe'}))
-
-
-    return fetch('/api/compositions', {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({title: 'Nuovo titolo', author: 'John Doe'})
-        })
-        .then(response => response.json())
-        .then(data => data.items)
-        .catch(error => console.error(error));
-}
-
 class CompositionsList extends React.Component {
 
     constructor(props) {
         super(props);
     }
 
+    getList(filter){
+        return fetch('/api/compositions', {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+            body: filter
+        })
+            .then(response => response.json())
+            .then(data => data.items)
+            .catch(error => console.error(error));
+
+    }
+
     componentDidMount() {
-        fetchPage(2)
+        this.getList(null)
     }
 
 
@@ -36,6 +33,7 @@ class CompositionsList extends React.Component {
                 <div className={'col'}>
 
 
+                    si si dentro
 
                 </div>
 
