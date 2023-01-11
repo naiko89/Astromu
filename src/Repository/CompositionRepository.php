@@ -39,6 +39,18 @@ class CompositionRepository extends ServiceEntityRepository
         }
     }
 
+    public function finByName($value){
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('o')
+            ->from(Composition::class, 'o')
+            ->where('o.name LIKE :name')
+            ->setParameter('name', '%'.$value.'%')
+            ->getQuery()
+            ->getResult();
+
+    }
+
 //    /**
 //     * @return Composition[] Returns an array of Composition objects
 //     */

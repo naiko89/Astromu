@@ -8,31 +8,29 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
+use App\Repository\CompositionRepository;
+use App\Repository\ContainerRepository;
+use App\Repository\CreatorRepository;
+
+use App\Service\SerializationService;
+
+
+
 class CompositionsController extends AbstractController
 {
     /**
-     * @Route("/api/compositions", name="compositions_index", methods={"GET", "POST", "PUT", "DELETE"})
+     * @Route("/api/compositions/{value}", name="compositions_index", methods={"GET", "POST", "PUT", "DELETE"})
      */
-    public function index(Request $request)
+    public function index($value,Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+        , SerializationService $serializationService)
     {
-
-
-        dump('sei dentro');
-
+        // dump('sei dentro');
         // Gestisci le richieste HTTP in base al metodo utilizzato
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
-                dump('sei dentro il get');
-                if($request->get('body')===null){
-                    dump('sei dentro null');
-                }
-                else{
-                    dump('è una richiesta filtrata');
-                }
-
-                // Restituisci la lista delle composizioni
-                break;
+                dump($compositionRepository->finByName($value));
+                return new JsonResponse($serializationService->serialize($compositionRepository->finByName($value)));
             case 'POST':
                 // Crea una nuova composizione
                 dump('sei in post aggiungi una o più');
@@ -46,11 +44,6 @@ class CompositionsController extends AbstractController
                 // Elimina una composizione
                 break;
         }
-
-         $response = new Response(new JsonResponse (['prova'=>'ciao']));
-         $response->headers->set('Content-Type', 'application/json');
-
-          return $response;
         //return new JsonResponse (['prova'=>'ciao']);
 
     }
