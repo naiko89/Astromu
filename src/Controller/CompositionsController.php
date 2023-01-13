@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,13 +23,12 @@ class CompositionsController extends AbstractController
     public function index($value,Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
         , SerializationService $serializationService)
     {
-        // dump('sei dentro');
-        // Gestisci le richieste HTTP in base al metodo utilizzato
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
                 dump($compositionRepository->finByName($value));
                 return new JsonResponse($serializationService->serialize($compositionRepository->finByName($value)));
+                break;
             case 'POST':
                 // Crea una nuova composizione
                 dump('sei in post aggiungi una o più');

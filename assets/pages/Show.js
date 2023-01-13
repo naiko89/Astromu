@@ -1,9 +1,6 @@
 import React from 'react';
 import ColumnCard from "../component/card/ColumnCard";
-import CompositionsList from "../component/lists/CompositionsList"
-import FormSecondTemp from "../forms/FormSecondTemp";
-import FormThirdTemp from "../forms/FormThirdTemp";
-
+import ListCompositions from "../component/lists/ListCompositions"
 import update from 'immutability-helper';
 
 class Show extends  React.Component {
@@ -37,7 +34,7 @@ class Show extends  React.Component {
     }
 
     render() {
-        let Boxed, peces
+        let BoxedOne, BoxedTwo , peces
 
          // console.log('**** Show ****')
          // console.log(this.state.handleValues)
@@ -54,22 +51,18 @@ class Show extends  React.Component {
         switch (this.state.layout.component) {
             case 'FirstViewer':
                 peces = this.state.composition
-                Boxed = CompositionsList
+                BoxedOne = ListCompositions
                 break;
             case 'StructureFirstLevel':
-                Boxed = FormSecondTemp
                 break;
             case 'StructureSecondLevel':
-                Boxed = FormThirdTemp
                 break;
         }
 
 
         return (
             <div className="container-fluid m-0 p-0" style={{height: '93vh'}}>
-
-                <Boxed></Boxed>
-
+                <BoxedOne></BoxedOne>
             </div>
         );
     }

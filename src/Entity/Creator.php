@@ -18,6 +18,7 @@ class Creator
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('compositionsList:read')]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Container::class, orphanRemoval: true)]

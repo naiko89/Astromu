@@ -18,6 +18,7 @@ class Container
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('compositionsList:read')]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'containers')]

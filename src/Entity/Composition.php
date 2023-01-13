@@ -27,7 +27,7 @@ class Composition
 
     #[ORM\ManyToOne(inversedBy: 'compositions')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('prova:read')]
+    #[Groups('compositionsList:read')]
     private ?Container $container = null;
 
     public function getId(): ?int
