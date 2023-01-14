@@ -1,7 +1,8 @@
 import React from "react";
-import FormResearch from "../../forms/FormResearch";
+import FormResearch from "../forms/FormResearch";
 import CompositionItem from "../items/CompositionItem";
-import FormComposition from "../../forms/FormComposition";
+import FormComposition from "../forms/FormComposition";
+
 
 class ListCompositions extends React.Component {
 

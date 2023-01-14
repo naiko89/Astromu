@@ -12,12 +12,13 @@ import './styles/card.css'
 import './styles/forms.css';
 
 
-// import jquery for bootstrap
+import $ from "jquery"
 
 
 // start the Stimulus application
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle'
+import Popper from 'popper.js/dist/popper'
+//import 'bootstrap/dist/js/bootstrap.bundle'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import React from "react"
@@ -31,7 +32,6 @@ import PageTwo from "./pages/DropDownPages/PageTwo"
 import PageThree from "./pages/DropDownPages/PageThree"
 
 require ('/assets/Main')
-
 
 ReactDOM.createRoot(document.getElementById("app")).render(
         <BrowserRouter>

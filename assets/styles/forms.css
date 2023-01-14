@@ -2,3 +2,8 @@
    font-size: 12px;
    height: 250px;
 }
+
+
+.modal-animation{
+   animation: fadeIn 0.5s ease-in;
+}
