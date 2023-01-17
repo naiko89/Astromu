@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Composition;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use http\Env\Response;
 
 /**
  * @extends ServiceEntityRepository<Composition>
@@ -39,13 +40,14 @@ class CompositionRepository extends ServiceEntityRepository
         }
     }
 
-    public function finByName($value){
-
+    public function finByName($value)
+    {
         return $this->getEntityManager()->createQueryBuilder()
             ->select('o')
             ->from(Composition::class, 'o')
             ->where('o.name LIKE :name')
             ->setParameter('name', '%'.$value.'%')
+            ->setMaxResults(30)
             ->getQuery()
             ->getResult();
 

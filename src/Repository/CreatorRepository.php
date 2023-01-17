@@ -39,6 +39,19 @@ class CreatorRepository extends ServiceEntityRepository
         }
     }
 
+    public function finByName($value) {
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('o')
+            ->from(Creator::class, 'o')
+            ->where('o.name LIKE :name')
+            ->setParameter('name', '%'.$value.'%')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+
+    }
+
 //    /**
 //     * @return Creator[] Returns an array of Creator objects
 //     */

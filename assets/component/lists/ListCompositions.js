@@ -11,10 +11,11 @@ class ListCompositions extends React.Component {
         this.state={searchValue: false, list:[], formCompositon:false}
         this.onChange = this.onChange.bind(this)
         this.toggleModalComposition = this.toggleModalComposition.bind(this)
+        this.getList = this.getList.bind(this)
     }
 
     getList(value){
-        return fetch(`/api/compositions/${value}`, {
+        fetch(`/api/compositions/${value}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         })
@@ -30,7 +31,6 @@ class ListCompositions extends React.Component {
     }
 
     toggleModalComposition(val){
-        console.log('cambia lo stato')
         this.setState({formComposition:val})
     }
 

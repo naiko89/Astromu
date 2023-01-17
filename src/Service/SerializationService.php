@@ -14,8 +14,8 @@ class SerializationService
         $this->serializer = $serializer;
     }
 
-    public function serialize($data) {
-        $data = $this->serializer->normalize($data, null, ['groups' => 'compositionsList:read']);
+    public function serialize($data, $group) {
+        $data = $this->serializer->normalize($data, null, ['groups' => $group]);
         return $this->serializer->serialize($data, 'json');
     }
 }

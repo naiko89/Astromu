@@ -21,17 +21,18 @@ class CompositionsController extends AbstractController
      * @Route("/api/compositions/{value}", name="compositions_index", methods={"GET", "POST", "PUT", "DELETE"})
      */
     public function index($value,Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        , SerializationService $serializationService)
+        , SerializationService $serializationService): JsonResponse
     {
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
                 dump($compositionRepository->finByName($value));
-                return new JsonResponse($serializationService->serialize($compositionRepository->finByName($value)));
+                return new JsonResponse($serializationService->serialize($compositionRepository->finByName($value),'compositionsList:read'));
                 break;
             case 'POST':
                 // Crea una nuova composizione
                 dump('sei in post aggiungi una o più');
+                return new JsonResponse(['funziona']);
                 break;
             case 'PUT':
                 dump('sei nel PUT modifica una');

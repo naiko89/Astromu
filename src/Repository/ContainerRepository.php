@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Composition;
 use App\Entity\Container;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use http\Env\Response;
 
 /**
  * @extends ServiceEntityRepository<Container>
@@ -38,6 +40,20 @@ class ContainerRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function finByName($value) {
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('o')
+            ->from(Container::class, 'o')
+            ->where('o.name LIKE :name')
+            ->setParameter('name', '%'.$value.'%')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+
+    }
+
 
 //    /**
 //     * @return Container[] Returns an array of Container objects
