@@ -1,6 +1,21 @@
 import React from "react";
 
 const CompositionItem = (props) => {
+
+    const handleDelete = async () => {
+
+        alert('sei dentro il gestore')
+        const response = await fetch(`/api/compositions?id=${props.value.id}`, {
+            method: 'DELETE',
+        });
+        if (response.ok) {
+            console.log('Elemento eliminato con successo');
+        } else {
+            console.log('Errore durante l\'eliminazione dell\'elemento');
+        }
+    }
+
+
     return (
         <li className="col list-unstyled" key={props.value.id}>
                     <div className="card shadow-sm">
@@ -11,8 +26,8 @@ const CompositionItem = (props) => {
                             </p>
                             <div className="d-flex justify-content-between align-items-center">
                                 <div className="btn-group">
-                                    <button type="button" className="btn btn-sm btn-outline-secondary">Modifica</button>
-                                    <button type="button" className="btn btn-sm btn-outline-secondary">Elimina</button>
+                                    <button type="button" className="btn btn-sm btn-outline-secondary" >Modifica</button>
+                                    <button type="button" className="btn btn-sm btn-outline-secondary" onClick={handleDelete}>Elimina</button>
                                 </div>
                                 <div className="d-flex flex-column text-muted">
                                     <small className={'font-bold'}>{props.value.creator.name}</small>

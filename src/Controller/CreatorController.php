@@ -28,7 +28,8 @@ class CreatorController extends AbstractController
                     break;
                 case 'POST':
                     // Crea una nuova composizione
-                    dump('sei in post aggiungi una o più');
+                    dump($value);
+                    dump('sei in post aggiungi una o più --->');
                     break;
                 case 'PUT':
                     dump('sei nel PUT modifica una');

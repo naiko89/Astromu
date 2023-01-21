@@ -15,7 +15,7 @@ class ListCompositions extends React.Component {
     }
 
     getList(value){
-        fetch(`/api/compositions/${value}`, {
+        fetch(`/api/compositions?text=${value}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         })

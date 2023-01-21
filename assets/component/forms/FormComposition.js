@@ -1,4 +1,5 @@
 import React from 'react';
+import queryString from 'query-string';
 import { Modal, Button, Form } from "react-bootstrap"
 
 class FormComposition extends React.Component{
@@ -6,8 +7,8 @@ class FormComposition extends React.Component{
     constructor(props) {
         super(props);
         this.props=props
-        this.state = {form:{composition:'' ,container: '', creator:''},
-        list:{container: '', creator:''}};
+        this.state = { form: {composition: '' ,container: '', creator: ''},
+            list: {container: '', creator: ''} };
 
         this.handleShow = this.handleShow.bind(this)
         this.handleClose = this.handleClose.bind(this)
@@ -27,23 +28,28 @@ class FormComposition extends React.Component{
 
     handleSubmit = (event) => {
         event.preventDefault()
-        let prova = 'prova'
-        if(this.state.form.container===this.state.list.container[0].name && this.state.form.creator===this.state.list.creator[0].name)
+        let uriFragment = queryString.stringify(this.state.form)
+        if(this.state.form.container === this.state.list.container[0].name && this.state.form.creator === this.state.list.creator[0].name)
         {
-            fetch(`/api/compositions/${prova}`, {
+            fetch(`/api/compositions?${uriFragment}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
             })
                 .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
                 .then(data => {
+                    this.setState({ form: {composition: '' ,container: '', creator: ''},
+                        list: {container: '', creator: ''} })
+                    this.handleClose()
 
-                })
+                } )
                 .catch(error => console.error(error));
         }
 
         else{
             alert('Inserimento non corretto')
         }
+
+
     }
 
     onChangeComposition = (event) =>{
@@ -96,9 +102,6 @@ class FormComposition extends React.Component{
         let listCreator = Object.values(this.state.list.creator).map((item, index) =>{
             return <option key={index} value={item.name}/>
         })
-
-
-        console.log(this.state)
 
         return (
             <>

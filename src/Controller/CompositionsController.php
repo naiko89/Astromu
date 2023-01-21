@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Composition;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,28 +19,34 @@ use App\Service\SerializationService;
 class CompositionsController extends AbstractController
 {
     /**
-     * @Route("/api/compositions/{value}", name="compositions_index", methods={"GET", "POST", "PUT", "DELETE"})
+     * @Route("/api/compositions", name="compositions_index", methods={"GET", "POST", "PUT", "DELETE"})
      */
-    public function index($value,Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        , SerializationService $serializationService): JsonResponse
+    public function index(Request $request,
+                          CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository,
+                          SerializationService $serializationService): JsonResponse
     {
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
-                dump($compositionRepository->finByName($value));
-                return new JsonResponse($serializationService->serialize($compositionRepository->finByName($value),'compositionsList:read'));
+                $text=$request->query->get('text');
+                dump($compositionRepository->finByName($text));
+                return new JsonResponse($serializationService->serialize($compositionRepository->finByName($text),'compositionsList:read'));
                 break;
             case 'POST':
-                // Crea una nuova composizione
-                dump('sei in post aggiungi una o più');
-                return new JsonResponse(['funziona']);
+                $composition = new Composition();
+                $composition->setName($request->query->get('composition'));
+                $composition->setCreator($creatorRepository->findOneBy(['name' => $request->query->get('creator')]));
+                $composition->setContainer($containerRepository->findOneBy(['name' => $request->query->get('container')]));
+                $compositionRepository->save($composition, true);
+                return new JsonResponse([true]);
                 break;
             case 'PUT':
                 dump('sei nel PUT modifica una');
                 // Aggiorna una composizione esistente
                 break;
             case 'DELETE':
-                dump('elimina una o forse più vediamo');
+                $compositionRepository->remove($compositionRepository->findOneBy(['id' => $request->query->get('id')]), true);
+                return new JsonResponse([true]);
                 // Elimina una composizione
                 break;
         }
