@@ -8,10 +8,11 @@ class ListCompositions extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state={searchValue: false, list:[], formCompositon:false}
+        this.state={searchValue: false, list:[], formCompositon:false, childrenToRender:false}
         this.onChange = this.onChange.bind(this)
         this.toggleModalComposition = this.toggleModalComposition.bind(this)
         this.getList = this.getList.bind(this)
+        this.handleChildRender = this.handleChildRender.bind(this)
     }
 
     getList(value){
@@ -26,8 +27,12 @@ class ListCompositions extends React.Component {
             .catch(error => console.error(error));
     }
 
+    handleChildRender(){
+        this.getList(this.state.searchValue)
+    }
+
     componentDidMount() {
-        this.getList(false)
+        this.getList('')
     }
 
     toggleModalComposition(val){
@@ -35,7 +40,7 @@ class ListCompositions extends React.Component {
     }
 
     onChange(event){
-        let value = event.target.value ? event.target.value : null
+        let value = event.target.value ? event.target.value : ''
         this.setState({searchValue:event.target.value})
         this.getList(value)
     }
@@ -43,17 +48,14 @@ class ListCompositions extends React.Component {
     render() {
 
         let value = this.state.searchValue ? this.state.searchValue : ''
-        let listItems = this.state.list.map((item, index) => <CompositionItem key={index} value={item}></CompositionItem>);
+        let listItems = this.state.list.map((item, index) => <CompositionItem key={index} value={item} childRend={this.handleChildRender}></CompositionItem>)
         let displayComposition = this.state.formComposition
-
-        console.log(this.state.list)
-
-
+        let rendering = this.state.childrenToRender
 
         return(
             <>
             <nav className="navbar navbar-light bg-light justify-content-between border-bottom">
-                <a className="navbar-brand"></a>
+                <a className="navbar-brand">{rendering}</a>
                 <div className={'form-inline my-2 my-lg-0 me-2 d-flex'}>
                     <button id='toggle-modal-composition' onClick={()=>this.toggleModalComposition(true)} className="btn btn-outline-success btn-sm me-1" style={{fontSize: '14px'}}>+</button>
                     <FormResearch onChangeSup={this.onChange} value={value}></FormResearch>
@@ -67,7 +69,7 @@ class ListCompositions extends React.Component {
                 </ul>
             </div>
 
-                <FormComposition displayHandle={this.toggleModalComposition} display={displayComposition}></FormComposition>
+                <FormComposition displayHandle={this.toggleModalComposition} display={displayComposition} childRend={this.handleChildRender}></FormComposition>
             </>
         )
     }

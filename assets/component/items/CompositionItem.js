@@ -3,13 +3,12 @@ import React from "react";
 const CompositionItem = (props) => {
 
     const handleDelete = async () => {
-
-        alert('sei dentro il gestore')
         const response = await fetch(`/api/compositions?id=${props.value.id}`, {
             method: 'DELETE',
         });
         if (response.ok) {
-            console.log('Elemento eliminato con successo');
+            alert('Elemento eliminato con successo');
+            props.childRend()
         } else {
             console.log('Errore durante l\'eliminazione dell\'elemento');
         }

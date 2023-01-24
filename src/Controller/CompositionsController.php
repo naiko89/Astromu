@@ -29,8 +29,17 @@ class CompositionsController extends AbstractController
         switch ($method) {
             case 'GET':
                 $text=$request->query->get('text');
-                dump($compositionRepository->finByName($text));
-                return new JsonResponse($serializationService->serialize($compositionRepository->finByName($text),'compositionsList:read'));
+                dump($text);
+                if($text === null || $text === ''){
+                    return new JsonResponse($serializationService->serialize(
+                        $compositionRepository->findBy([],['name' => 'ASC'],30),'compositionsList:read')
+                    );
+                }
+                else{
+                    return new JsonResponse($serializationService->serialize(
+                        $compositionRepository->finByName($text),'compositionsList:read')
+                    );
+                }
                 break;
             case 'POST':
                 $composition = new Composition();

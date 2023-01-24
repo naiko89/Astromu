@@ -40,6 +40,7 @@ class FormComposition extends React.Component{
                     this.setState({ form: {composition: '' ,container: '', creator: ''},
                         list: {container: '', creator: ''} })
                     this.handleClose()
+                    this.props.childRend()
 
                 } )
                 .catch(error => console.error(error));
