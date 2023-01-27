@@ -1,7 +1,7 @@
 import React from "react";
-import formFirstInsert from "../forms/FormFirstInsert";
-import {ResizeLayout} from "../layout/ResizeLayout";
-import ItemCompositionEditorPiece from "../items/ItemCompositionEditorPiece";
+import formFirstInsert from "../component/forms/FormFirstInsert";
+import {ResizeLayout} from "../component/layout/ResizeLayout";
+import ItemCompositionEditorPiece from "../component/items/ItemCompositionEditorPiece";
 import update from "immutability-helper";
 
 class PrimaryCard extends React.Component {

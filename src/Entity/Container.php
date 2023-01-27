@@ -14,16 +14,16 @@ class Container
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['compositionsList:read', 'researchFormCompContainer:read'])]
+    #[Groups(['compositionsList:read','containerList:read', 'researchFormCompContainer:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['compositionsList:read','researchFormCompContainer:read'])]
+    #[Groups(['compositionsList:read','containerList:read','researchFormCompContainer:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'containers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['researchFormCompContainer:read'])]
+    #[Groups(['researchFormCompContainer:read','containerList:read','researchFormContCreator:read'])]
     private ?Creator $creator = null;
 
     #[ORM\OneToMany(mappedBy: 'container', targetEntity: Composition::class, orphanRemoval: true)]

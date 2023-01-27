@@ -42,13 +42,14 @@ class CompositionsController extends AbstractController
                 }
                 break;
             case 'POST':
-                $composition = new Composition();
+                /*$composition = new Composition();
                 $container = $containerRepository->findOneBy(['id' => $request->query->get('containerId')]);
                 $creator= $creatorRepository->findOneBy(['id' => $request->query->get('creatorId')]);
                 $composition->setName($request->query->get('composition'))
                     ->setContainer($container)
                     ->setCreator($creator);
                 $compositionRepository->save($composition, true);
+                */
                 return new JsonResponse([true]);
                 break;
             case 'PUT':
@@ -63,4 +64,43 @@ class CompositionsController extends AbstractController
         return new JsonResponse (['error']);
 
     }
+
+    /**
+     * @Route("/api/compositions/form", name="compositions_form", methods={"GET", "POST", "PUT", "DELETE"})
+     */
+    public function researchForForm(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+        , SerializationService $serializationService): JsonResponse
+    {
+        $method = $request->getMethod();
+        switch ($method) {
+            case 'GET':
+                $text=$request->query->get('text');
+                dump($containerRepository->finByName($text));
+                return new JsonResponse($serializationService->serialize($containerRepository->finByName($text),'researchFormCompContainer:read'));
+                break;
+            case 'POST':
+                $composition = new Composition();
+                $container = $containerRepository->findOneBy(['id' => $request->query->get('containerId')]);
+                $creator= $creatorRepository->findOneBy(['id' => $request->query->get('creatorId')]);
+                $composition->setName($request->query->get('composition'))
+                    ->setContainer($container)
+                    ->setCreator($creator);
+                $compositionRepository->save($composition, true);
+                return new JsonResponse([true]);
+                dump('sei in post aggiungi una o più');
+                break;
+            case 'PUT':
+                dump('sei nel PUT modifica una');
+                // Aggiorna una composizione esistente
+                break;
+            case 'DELETE':
+                dump('elimina una o forse più vediamo');
+                // Elimina una composizione
+                break;
+        }
+        return new JsonResponse (['errore']);
+
+
+    }
 }
+

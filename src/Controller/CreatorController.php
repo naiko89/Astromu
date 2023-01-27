@@ -40,7 +40,38 @@ class CreatorController extends AbstractController
                     // Elimina una composizione
                     break;
             }
-            //return new JsonResponse (['prova'=>'ciao']);
+            return new JsonResponse (['error']);
+
+        }
+    }
+
+    /**
+     * @Route("/api/creator/form/{value}", name="creator_index", methods={"GET", "POST", "PUT", "DELETE"})
+     */
+    public function researchForForm($value,Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+        , SerializationService $serializationService): JsonResponse
+    {
+        {
+            $method = $request->getMethod();
+            switch ($method) {
+                case 'GET':
+                    return new JsonResponse($serializationService->serialize($creatorRepository->finByName($value),'researchFormContCreator:read'));
+                    break;
+                case 'POST':
+                    // Crea una nuova composizione
+                    dump($value);
+                    dump('sei in post aggiungi una o più --->');
+                    break;
+                case 'PUT':
+                    dump('sei nel PUT modifica una');
+                    // Aggiorna una composizione esistente
+                    break;
+                case 'DELETE':
+                    dump('elimina una o forse più vediamo');
+                    // Elimina una composizione
+                    break;
+            }
+            return new JsonResponse (['error']);
 
         }
     }

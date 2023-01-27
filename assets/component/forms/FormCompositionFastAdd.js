@@ -2,7 +2,7 @@ import React from 'react';
 import queryString from 'query-string';
 import { Modal, Button, Form, ListGroup } from "react-bootstrap"
 
-class FormComposition extends React.Component{
+class FormCompositionFastAdd extends React.Component{
 
     constructor(props) {
         super(props);
@@ -31,7 +31,7 @@ class FormComposition extends React.Component{
         let uriFragment = queryString.stringify(this.state.form)
         if(this.state.list.container && this.state.list.container.some(element => element.name === this.state.form.container))
         {
-            fetch(`/api/compositions?${uriFragment}`, {
+            fetch(`/api/compositions/form?${uriFragment}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
             })
@@ -59,10 +59,12 @@ class FormComposition extends React.Component{
 
     onChangeContainer = (event) =>{ //-->this search could be better, we have the container in the input for more targeted search
         let tempState= this.state
+        let uriFragment = ''
         if(!tempState.form.containerSel) {
             tempState.form.container = event.target.value
+            uriFragment = queryString.stringify({'text' : tempState.form.container})
             if (event.target.value !== '') {
-                fetch(`/api/container/${event.target.value}`, {
+                fetch(`/api/compositions/form?${uriFragment}`, {
                     method: 'GET',
                     headers: {'Content-Type': 'application/json'}
                 })
@@ -146,7 +148,7 @@ class FormComposition extends React.Component{
 }
 
 
-export default FormComposition
+export default FormCompositionFastAdd
 
 
 

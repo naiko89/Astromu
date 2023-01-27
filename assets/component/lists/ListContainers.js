@@ -1,24 +1,24 @@
 import React from "react";
 import FormResearch from "../forms/FormResearch";
-import ItemComposition from "../items/ItemComposition";
-import FormCompositionFastAdd from "../forms/FormCompositionFastAdd";
+import ItemContainer from "../items/ItemContainer";
+import FormContainerFastAdd from "../forms/FormContainerFastAdd";
 
 
-class ListCompositions extends React.Component {
+class ListContainers extends React.Component {
 
     constructor(props) {
         super(props);
         this.props = props
-        this.state={ searchValue: '', list:[], formComposition:false }
+        this.state={ searchValue: '', list:[], formContainer:false }
         this.onChange = this.onChange.bind(this)
-        this.toggleModalComposition = this.toggleModalComposition.bind(this)
+        this.toggleModalContainer = this.toggleModalContainer.bind(this)
         this.getList = this.getList.bind(this)
         this.handleChildRender = this.handleChildRender.bind(this)
-        this.showEditComposition = this.showEditComposition.bind(this)
+        this.showEditContainer = this.showEditContainer.bind(this)
     }
 
     getList(value){
-        fetch(`/api/compositions?text=${value}`, {
+        fetch(`/api/container?text=${value}`, { //`/api/compositions?text=${value}`
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         })
@@ -38,8 +38,8 @@ class ListCompositions extends React.Component {
         this.getList('')
     }
 
-    toggleModalComposition(val){
-        this.setState({formComposition:val})
+    toggleModalContainer(val){
+        this.setState({formContainer:val})
     }
 
     onChange(event){
@@ -47,25 +47,26 @@ class ListCompositions extends React.Component {
         this.setState({searchValue:event.target.value})
         this.getList(value)
     }
-    showEditComposition(id){
-        this.props.showEditComp(id)
+    showEditContainer(id){
+        alert('mostrami pagina editor'+id)
+        //this.props.showEditComp(id)
     }
 
     render() {
 
         let value = this.state.searchValue
         let listItems = this.state.list.map(
-            (item, index) => <ItemComposition key={index} value={item} childRend={this.handleChildRender}
-                                              showEditComp={this.showEditComposition}>
-            </ItemComposition>)
-        let displayComposition = this.state.formComposition
+            (item, index) => <ItemContainer key={index} value={item} childRend={this.handleChildRender}
+                                              showEditCont={this.showEditContainer}>
+            </ItemContainer>)
+        let displayContainer = this.state.formContainer
 
         return(
             <>
             <nav className="navbar navbar-light bg-light justify-content-between border-bottom">
                 <a className="navbar-brand"></a>
                 <div className={'form-inline my-2 my-lg-0 me-2 d-flex'}>
-                    <button id='toggle-modal-composition' onClick={()=>this.toggleModalComposition(true)} className="btn btn-outline-success btn-sm me-1" style={{fontSize: '14px'}}>+</button>
+                    <button id='toggle-modal-composition' onClick={()=>this.toggleModalContainer(true)} className="btn btn-outline-success btn-sm me-1" style={{fontSize: '14px'}}>+</button>
                     <FormResearch onChangeSup={this.onChange} value={value}></FormResearch>
                 </div>
 
@@ -73,10 +74,13 @@ class ListCompositions extends React.Component {
             <div className={'container'}>
 
                 <ul className={'list-unstyled d-flex flex-wrap row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 pt-2'}>
+
                     {listItems}
+
                 </ul>
             </div>
-                <FormCompositionFastAdd displayHandle={this.toggleModalComposition} display={displayComposition} childRend={this.handleChildRender}></FormCompositionFastAdd>
+                <FormContainerFastAdd displayHandle={this.toggleModalContainer} display={displayContainer} childRend={this.handleChildRender}></FormContainerFastAdd>
+
             </>
         )
     }
@@ -84,4 +88,8 @@ class ListCompositions extends React.Component {
 
 }
 
-export default ListCompositions;
+export default ListContainers;
+
+
+//
+//{listItems}

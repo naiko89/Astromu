@@ -26,15 +26,15 @@ class Navbar extends  React.Component{
                             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                                 <Buttons className="nav-link border-bottom-2 text-center p-0 m-0"
                                          classIcon={"bi bi-book-fill navbar-icon"}
-                                         urlTo="/index/show" text="Composizioni"></Buttons>
-                                <Buttons className="nav-link border-bottom-2 text-center p-0 m-0" classIcon={"bi bi-pencil-square navbar-icon"} urlTo="/index/edit" text="Modifica"></Buttons>
-                                <Dropdown href="#" id="navbarDropdown" text="Lista" classLink={"nav-link border-bottom-2 text-center p-0 m-0"} classIcon={"bi bi-three-dots navbar-icon"}
-                                          buttonList={[
-                                                      {className:'nav-link text-center', urlTo:'/index/page-one#', text:'Pagina 1'},
-                                                      {className:'nav-link text-center', urlTo:'/index/page-two#', text:'Pagina 2'},
-                                                      {className:'nav-link text-center', urlTo:'/index/page-three#', text:'Pagina 3'}]
-                                                  }>
-                                </Dropdown>
+                                         urlTo="/index/show_comp" text="Composizioni"></Buttons>
+
+                                <Buttons className="nav-link border-bottom-2 text-center p-0 m-0"
+                                         classIcon={"bi bi-archive navbar-icon"}
+                                         urlTo="/index/show_cont" text="Contenitori"></Buttons>
+
+                                <Buttons className="nav-link border-bottom-2 text-center p-0 m-0"
+                                         classIcon={"bi bi-person-bounding-box navbar-icon"}
+                                         urlTo="/index/show_crea" text="Creatori"></Buttons>
                             </ul>
                             <ul className="navbar-nav d-flex float-end">
                                    <li className="nav-item float-end">
@@ -52,3 +52,13 @@ class Navbar extends  React.Component{
 }
 
 export default Navbar;
+
+/*
+<Dropdown href="#" id="navbarDropdown" text="Lista" classLink={"nav-link border-bottom-2 text-center p-0 m-0"} classIcon={"bi bi-three-dots navbar-icon"}
+                                          buttonList={[
+                                                      {className:'nav-link text-center', urlTo:'/index/page-one#', text:'Pagina 1'},
+                                                      {className:'nav-link text-center', urlTo:'/index/page-two#', text:'Pagina 2'},
+                                                      {className:'nav-link text-center', urlTo:'/index/page-three#', text:'Pagina 3'}]
+                                                  }>
+                                </Dropdown>
+ */

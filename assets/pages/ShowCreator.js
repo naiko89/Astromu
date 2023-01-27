@@ -2,7 +2,7 @@ import React from 'react';
 import ColumnCard from "../editor/EditorComposition";
 import ListCompositions from "../component/lists/ListCompositions"
 
-class ShowCompositions extends  React.Component {
+class ShowCreator extends  React.Component {
     constructor(props) {
         super(props);
         const user = props.nomeUser
@@ -49,7 +49,7 @@ class ShowCompositions extends  React.Component {
     }
 }
 
-export default ShowCompositions;
+export default ShowCreator;
 
 
 //<ul className="nav" id="myTab">

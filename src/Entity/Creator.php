@@ -14,11 +14,11 @@ class Creator
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['compositionsList:read','researchFormCompContainer:read'])]
+    #[Groups(['compositionsList:read','researchFormCompContainer:read','researchFormContCreator:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['compositionsList:read','researchFormCompCreator:read'])]
+    #[Groups(['compositionsList:read','researchFormCompCreator:read','researchFormContCreator:read'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Container::class, orphanRemoval: true)]

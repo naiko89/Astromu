@@ -48,6 +48,7 @@ class ContainerRepository extends ServiceEntityRepository
             ->from(Container::class, 'o')
             ->where('o.name LIKE :name')
             ->setParameter('name', '%'.$value.'%')
+            ->orderBy('o.name', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
