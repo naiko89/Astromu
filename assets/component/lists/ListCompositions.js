@@ -1,6 +1,6 @@
 import React from "react";
 import FormResearch from "../forms/FormResearch";
-import CompositionItem from "../items/CompositionItem";
+import ItemComposition from "../items/ItemComposition";
 import FormComposition from "../forms/FormComposition";
 
 
@@ -8,11 +8,13 @@ class ListCompositions extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state={searchValue: false, list:[], formCompositon:false, childrenToRender:false}
+        this.props = props
+        this.state={ searchValue: '', list:[], formComposition:false }
         this.onChange = this.onChange.bind(this)
         this.toggleModalComposition = this.toggleModalComposition.bind(this)
         this.getList = this.getList.bind(this)
         this.handleChildRender = this.handleChildRender.bind(this)
+        this.showEditComposition = this.showEditComposition.bind(this)
     }
 
     getList(value){
@@ -22,6 +24,7 @@ class ListCompositions extends React.Component {
         })
             .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
             .then(data => {
+                console.log(data)
                 this.setState({list:JSON.parse(data)})
             })
             .catch(error => console.error(error));
@@ -44,18 +47,23 @@ class ListCompositions extends React.Component {
         this.setState({searchValue:event.target.value})
         this.getList(value)
     }
+    showEditComposition(id){
+        this.props.showEditComp(id)
+    }
 
     render() {
 
-        let value = this.state.searchValue ? this.state.searchValue : ''
-        let listItems = this.state.list.map((item, index) => <CompositionItem key={index} value={item} childRend={this.handleChildRender}></CompositionItem>)
+        let value = this.state.searchValue
+        let listItems = this.state.list.map(
+            (item, index) => <ItemComposition key={index} value={item} childRend={this.handleChildRender}
+                                              showEditComp={this.showEditComposition}>
+            </ItemComposition>)
         let displayComposition = this.state.formComposition
-        let rendering = this.state.childrenToRender
 
         return(
             <>
             <nav className="navbar navbar-light bg-light justify-content-between border-bottom">
-                <a className="navbar-brand">{rendering}</a>
+                <a className="navbar-brand"></a>
                 <div className={'form-inline my-2 my-lg-0 me-2 d-flex'}>
                     <button id='toggle-modal-composition' onClick={()=>this.toggleModalComposition(true)} className="btn btn-outline-success btn-sm me-1" style={{fontSize: '14px'}}>+</button>
                     <FormResearch onChangeSup={this.onChange} value={value}></FormResearch>
@@ -68,7 +76,6 @@ class ListCompositions extends React.Component {
                     {listItems}
                 </ul>
             </div>
-
                 <FormComposition displayHandle={this.toggleModalComposition} display={displayComposition} childRend={this.handleChildRender}></FormComposition>
             </>
         )
@@ -77,9 +84,4 @@ class ListCompositions extends React.Component {
 
 }
 
-/*{this.state.list.map((item, index) => (
-                    <li key={index}>{item}</li>
-                ))}
-
-*/
 export default ListCompositions;

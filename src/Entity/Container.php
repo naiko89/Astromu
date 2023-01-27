@@ -14,7 +14,7 @@ class Container
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('compositionsList:read')]
+    #[Groups(['compositionsList:read', 'researchFormCompContainer:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -23,6 +23,7 @@ class Container
 
     #[ORM\ManyToOne(inversedBy: 'containers')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['researchFormCompContainer:read'])]
     private ?Creator $creator = null;
 
     #[ORM\OneToMany(mappedBy: 'container', targetEntity: Composition::class, orphanRemoval: true)]

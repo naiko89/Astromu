@@ -1,8 +1,8 @@
 import React from 'react';
 const $ = require('jquery');
 
-
-class CompositionViewer extends React.Component{
+/////rename it!!!!
+class ItemCompositionEditorPiece extends React.Component{
 
     constructor(props) {
         super(props);
@@ -61,4 +61,4 @@ class CompositionViewer extends React.Component{
     )}
 }
 
-export default CompositionViewer
+export default ItemCompositionEditorPiece

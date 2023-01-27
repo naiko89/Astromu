@@ -1,20 +1,20 @@
 import React from 'react';
 import queryString from 'query-string';
-import { Modal, Button, Form } from "react-bootstrap"
+import { Modal, Button, Form, ListGroup } from "react-bootstrap"
 
 class FormComposition extends React.Component{
 
     constructor(props) {
         super(props);
         this.props=props
-        this.state = { form: {composition: '' ,container: '', creator: ''},
-            list: {container: '', creator: ''} };
+        this.state = { form: { composition: '' ,container: '',containerId:'', creatorId: '', containerSel: false },
+            list: { container: '', creator: '' } };
 
         this.handleShow = this.handleShow.bind(this)
         this.handleClose = this.handleClose.bind(this)
         this.onChangeContainer = this.onChangeContainer.bind(this)
-        this.onChangeCreator = this.onChangeCreator.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.selectContainer = this.selectContainer.bind(this)
 
     }
 
@@ -26,10 +26,10 @@ class FormComposition extends React.Component{
         this.props.displayHandle(false)
     }
 
-    handleSubmit = (event) => {
+    handleSubmit(event) {
         event.preventDefault()
         let uriFragment = queryString.stringify(this.state.form)
-        if(this.state.form.container === this.state.list.container[0].name && this.state.form.creator === this.state.list.creator[0].name)
+        if(this.state.list.container && this.state.list.container.some(element => element.name === this.state.form.container))
         {
             fetch(`/api/compositions?${uriFragment}`, {
                 method: 'POST',
@@ -37,8 +37,8 @@ class FormComposition extends React.Component{
             })
                 .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
                 .then(data => {
-                    this.setState({ form: {composition: '' ,container: '', creator: ''},
-                        list: {container: '', creator: ''} })
+                    this.setState({ form: { composition: '' ,container: '', creator: '' },
+                        list: { container: '', creator: '' } })
                     this.handleClose()
                     this.props.childRend()
 
@@ -49,8 +49,6 @@ class FormComposition extends React.Component{
         else{
             alert('Inserimento non corretto')
         }
-
-
     }
 
     onChangeComposition = (event) =>{
@@ -59,73 +57,77 @@ class FormComposition extends React.Component{
         this.setState(tempState);
     }
 
-    onChangeContainer = (event) =>{
+    onChangeContainer = (event) =>{ //-->this search could be better, we have the container in the input for more targeted search
         let tempState= this.state
-        if(event.target.value!=='') {
-            fetch(`/api/container/${event.target.value}`, {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'}
-            })
-                .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
-                .then(data => {
-                    tempState.list.container=JSON.parse(data)
+        if(!tempState.form.containerSel) {
+            tempState.form.container = event.target.value
+            if (event.target.value !== '') {
+                fetch(`/api/container/${event.target.value}`, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'}
                 })
-                .catch(error => console.error(error));
+                    .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
+                    .then(data => {
+                        tempState.list.container = JSON.parse(data)
+                        this.setState(tempState)
+                    })
+                    .catch(error => console.error(error));
+            } else {
+                tempState.list.container = ''
+                this.setState(tempState)
+            }
         }
-        tempState.form.container = event.target.value
-        this.setState(tempState)
-    }
-
-    onChangeCreator = (event) =>{
-        let tempState= this.state
-        if(event.target.value!==''){
-            fetch(`/api/creator/${event.target.value}`, {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'}
-            })
-                .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
-                .then(data => {
-                    tempState.list.creator=JSON.parse(data)
-                })
-                .catch(error => console.error(error));
+        else{
+            tempState.list.container = ''
+            tempState.form.containerSel= false
+            this.setState(tempState)
         }
-        tempState.form.creator=event.target.value
-        this.setState(tempState)
 
     }
 
+    selectContainer = (item) =>{
+        let tSta=this.state
+        this.setState({
+            ...tSta,
+            form: {
+                ...tSta.form,
+                ...Object.fromEntries(
+                    Object.entries({
+                        container: item.name,
+                        containerSel: true,
+                        containerId: item.id,
+                        creatorId: item.creator.id
+                    })
+                )
+            }
+        })
+    }
     render() {
 
         let display=this.props.display
+        let contSel = this.state.form.containerSel
         let listContainer = Object.values(this.state.list.container).map((item, index) => {
-            return <option key={index} value={item.name}/>
-        })
-        let listCreator = Object.values(this.state.list.creator).map((item, index) =>{
-            return <option key={index} value={item.name}/>
+                return <ListGroup.Item key={index} value={item.name} onClick={()=>this.selectContainer(item)}>
+                    { item.name }
+                </ListGroup.Item>
         })
 
         return (
             <>
-                <Modal show={display} onHide={this.handleClose}>
+                <Modal show={display} onHide={this.handleClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Aggiungi Composizione</Modal.Title>
                     </Modal.Header>
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
-                        <Form.Group controlId="formValOne" className={'mb-2'} onSubmit={this.handleSubmit}>
-                            <Form.Control type="text" placeholder="Inserisci Nome" onChange={this.onChangeComposition} value={this.state.form.composition}/>
+                        <Form.Group controlId="formValOne" className={'mb-2'}>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome" onChange={this.onChangeComposition} value={this.state.form.composition}/>
                         </Form.Group>
                         <Form.Group controlId="formValTwo" className={'mb-2'}>
-                            <Form.Control list="containerOptions" placeholder="Aggiungi Container" onChange={this.onChangeContainer} value={this.state.form.container}/>
-                            <datalist id="containerOptions">
-                                {listContainer}
-                            </datalist>
-                        </Form.Group>
-                        <Form.Group controlId="formValThree" className={'mb-2'}>
-                            <Form.Control list="creatorOptions" placeholder="Aggiungi Creator" onChange={this.onChangeCreator} value={this.state.form.creator}/>
-                            <datalist id="creatorOptions">
-                                {listCreator}
-                            </datalist>
+                            <Form.Control type="text" list="containerOptions" autoComplete="off" placeholder="Aggiungi Container" onChange={(e) => this.onChangeContainer(e)} value={this.state.form.container}/>
+                            <ListGroup>
+                                {contSel ? '' : listContainer}
+                            </ListGroup>
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
@@ -145,3 +147,35 @@ class FormComposition extends React.Component{
 
 
 export default FormComposition
+
+
+
+/*
+                        <Form.Group controlId="formValThree" className={'mb-2'}>
+                            <Form.Control list="creatorOptions" autocomplete="off" placeholder="Aggiungi Creator" onChange={this.onChangeCreator} value={this.state.form.creator}/>
+                            <datalist id="creatorOptions">
+                                {listCreator}
+                            </datalist>
+                        </Form.Group>
+
+ */
+
+/*
+onChangeCreator = (event) =>{
+        let tempState= this.state
+        if(event.target.value!==''){
+            fetch(`/api/creator/${event.target.value}`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            })
+                .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
+                .then(data => {
+                    tempState.list.creator=JSON.parse(data)
+                })
+                .catch(error => console.error(error));
+        }
+        tempState.form.creator=event.target.value
+        this.setState(tempState)
+
+    }
+ */

@@ -1,7 +1,7 @@
 import React from "react";
 import formFirstInsert from "../forms/FormFirstInsert";
 import {ResizeLayout} from "../layout/ResizeLayout";
-import CompositionViewer from "../../box/show/CompositionViewer";
+import ItemCompositionEditorPiece from "../items/ItemCompositionEditorPiece";
 import update from "immutability-helper";
 
 class PrimaryCard extends React.Component {
@@ -18,6 +18,7 @@ class PrimaryCard extends React.Component {
         this.handleCompositionFormRedit = this.handleCompositionFormRedit.bind(this)
         this.handleCompositionRedit = this.handleCompositionRedit.bind(this)
         this.handleCompositionRemove = this.handleCompositionRemove.bind(this)
+        this.exit = this.exit.bind(this)
 
     }
 
@@ -50,6 +51,9 @@ class PrimaryCard extends React.Component {
         }))
         this.setState({handleValues:{trigger:false, textarea:'',id:'', select: false}})
     }
+    exit(){
+        this.props.hideEditComp()
+    }
 
     render() {
 
@@ -62,10 +66,15 @@ class PrimaryCard extends React.Component {
             <>
                 <ResizeLayout enable ={{top:false, right:true, bottom:false, left:false, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false}}>
                    <div className="card text-center">
+                       <div className="card-header">
+                           <button className="btn btn-danger btn-sm float-end" onClick={this.exit}>
+                               <i className="bi bi-box-arrow-left"></i>
+                           </button>
+                       </div>
                       <div className="card-body p-2">
                         <div className="tab-content">
                             <div className="tab-pane active" id="home">
-                                <h6 className="card-title">Gestione</h6>
+                                <h6 className="card-title">Gestione {this.props.id}</h6>
 
                                 <Form handleSubmitCard={this.handleCompositionFormAdd} handleModifyCard={this.handleCompositionFormRedit} formValues={this.state.handleValues} onChangeSup={this.onChange}>
 
@@ -75,10 +84,10 @@ class PrimaryCard extends React.Component {
                         </div>
                       </div>
                    </div>
-                    <CompositionViewer peces={peces}
-                                 handleCompositionRemove={this.handleCompositionRemove}
-                                 handleCompositionRedit={this.handleCompositionRedit}>
-                    </CompositionViewer>
+                    <ItemCompositionEditorPiece peces={peces}
+                                                handleCompositionRemove={this.handleCompositionRemove}
+                                                handleCompositionRedit={this.handleCompositionRedit}>
+                    </ItemCompositionEditorPiece>
                 </ResizeLayout>
             </>
         )

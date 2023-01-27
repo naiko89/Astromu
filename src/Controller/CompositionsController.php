@@ -37,15 +37,17 @@ class CompositionsController extends AbstractController
                 }
                 else{
                     return new JsonResponse($serializationService->serialize(
-                        $compositionRepository->finByName($text),'compositionsList:read')
+                        $compositionRepository->finByName($text.'%'),'compositionsList:read')
                     );
                 }
                 break;
             case 'POST':
                 $composition = new Composition();
-                $composition->setName($request->query->get('composition'));
-                $composition->setCreator($creatorRepository->findOneBy(['name' => $request->query->get('creator')]));
-                $composition->setContainer($containerRepository->findOneBy(['name' => $request->query->get('container')]));
+                $container = $containerRepository->findOneBy(['id' => $request->query->get('containerId')]);
+                $creator= $creatorRepository->findOneBy(['id' => $request->query->get('creatorId')]);
+                $composition->setName($request->query->get('composition'))
+                    ->setContainer($container)
+                    ->setCreator($creator);
                 $compositionRepository->save($composition, true);
                 return new JsonResponse([true]);
                 break;
@@ -56,10 +58,9 @@ class CompositionsController extends AbstractController
             case 'DELETE':
                 $compositionRepository->remove($compositionRepository->findOneBy(['id' => $request->query->get('id')]), true);
                 return new JsonResponse([true]);
-                // Elimina una composizione
                 break;
         }
-        //return new JsonResponse (['prova'=>'ciao']);
+        return new JsonResponse (['error']);
 
     }
 }

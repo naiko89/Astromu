@@ -47,6 +47,7 @@ class CompositionRepository extends ServiceEntityRepository
             ->from(Composition::class, 'o')
             ->where('o.name LIKE :name')
             ->setParameter('name', '%'.$value.'%')
+            ->orderBy('o.name', 'ASC')
             ->setMaxResults(30)
             ->getQuery()
             ->getResult();

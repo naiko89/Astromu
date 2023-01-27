@@ -24,7 +24,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Show from "./pages/Show"
+import ShowCompositions from "./pages/ShowCompositions"
 import Edit from "./pages/Edit"
 import Main from "./Main"
 import PageOne from "./pages/DropDownPages/PageOne"
@@ -37,8 +37,8 @@ ReactDOM.createRoot(document.getElementById("app")).render(
         <BrowserRouter>
             <Routes>
                 <Route path="/index" element={<Main />}>
-                    <Route index element={<Show />} />
-                    <Route path="/index/show" element={<Show />} />
+                    <Route index element={<ShowCompositions />} />
+                    <Route path="/index/show" element={<ShowCompositions />} />
                     <Route path="/index/edit" element={<Edit />} />
                     <Route path="/index/page-one" element={<PageOne />} />
                     <Route path="/index/page-two" element={<PageTwo />} />

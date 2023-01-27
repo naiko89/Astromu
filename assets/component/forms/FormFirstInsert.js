@@ -43,7 +43,7 @@ class FormFirstInsert extends React.Component{
                     <div className="row mb-2">
                         <div className="col-12 mb-2">
                             <select id="tipo-testo" value={select || false} className="form-select text-center" onChange={this.props.onChangeSup} name="select">
-                                <option value="false">Seleziona il tipo di testo</option>
+                                <option value="false">Seleziona la Definizione</option>
                                 <option value="S">S</option>
                                 <option value="R">R</option>
                                 <option value="RM">RM</option>

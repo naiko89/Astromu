@@ -14,7 +14,7 @@ class Creator
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('compositionsList:read')]
+    #[Groups(['compositionsList:read','researchFormCompContainer:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
