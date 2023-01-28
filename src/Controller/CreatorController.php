@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Creator;
 use App\Repository\CompositionRepository;
 use App\Repository\ContainerRepository;
 use App\Repository\CreatorRepository;
@@ -15,52 +16,67 @@ use Symfony\Component\Routing\Annotation\Route;
 class CreatorController extends AbstractController
 {
     /**
-     * @Route("/api/creator/{value}", name="creator_index", methods={"GET", "POST", "PUT", "DELETE"})
+     * @Route("/api/creator", name="creator_index", methods={"GET", "POST", "PUT", "DELETE"})
      */
-    public function index($value,Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+    public function index(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
         , SerializationService $serializationService): JsonResponse
     {
-        {
+
             $method = $request->getMethod();
+            $text = $request->query->get('text');
             switch ($method) {
                 case 'GET':
-                    return new JsonResponse($serializationService->serialize($creatorRepository->finByName($value),'researchFormCompCreator:read'));
+                    dump('sei del get del creatore');
+                    dump($serializationService->serialize($creatorRepository->finByName($text),'creatorList:read'));
+                    if($text === null || $text === ''){
+                        return new JsonResponse($serializationService->serialize(
+                            $creatorRepository->findBy([],['name' => 'ASC'],30),'creatorList:read')
+                        );
+                    }
+                    else{
+                        return new JsonResponse($serializationService->serialize(
+                            $creatorRepository->finByName($text.'%'),'creatorList:read')
+                        );
+                    }
                     break;
                 case 'POST':
                     // Crea una nuova composizione
-                    dump($value);
-                    dump('sei in post aggiungi una o più --->');
+                    dump($text);
                     break;
                 case 'PUT':
                     dump('sei nel PUT modifica una');
                     // Aggiorna una composizione esistente
                     break;
                 case 'DELETE':
-                    dump('elimina una o forse più vediamo');
-                    // Elimina una composizione
+                    $creatorRepository->remove($creatorRepository->findOneBy(['id' => $request->query->get('id')]), true);
+                    return new JsonResponse([true]);
                     break;
             }
             return new JsonResponse (['error']);
 
-        }
+
     }
 
     /**
-     * @Route("/api/creator/form/{value}", name="creator_index", methods={"GET", "POST", "PUT", "DELETE"})
+     * @Route("/api/creator/form", name="creator_form", methods={"GET", "POST", "PUT", "DELETE"})
      */
-    public function researchForForm($value,Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+    public function researchForForm(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
         , SerializationService $serializationService): JsonResponse
     {
-        {
+
             $method = $request->getMethod();
             switch ($method) {
                 case 'GET':
-                    return new JsonResponse($serializationService->serialize($creatorRepository->finByName($value),'researchFormContCreator:read'));
+                    //$text = $request->query->get('text');
+                    //return new JsonResponse($serializationService->serialize($creatorRepository->finByName($text),'researchFormContCreator:read'));
                     break;
                 case 'POST':
                     // Crea una nuova composizione
-                    dump($value);
-                    dump('sei in post aggiungi una o più --->');
+                    $creator = new Creator();
+                    dump($request->query->get('creator'));
+                    $creator->setName($request->query->get('creator'));
+                    $creatorRepository->save($creator, true);
+                    return new JsonResponse([true]);
                     break;
                 case 'PUT':
                     dump('sei nel PUT modifica una');
@@ -73,6 +89,6 @@ class CreatorController extends AbstractController
             }
             return new JsonResponse (['error']);
 
-        }
+
     }
 }

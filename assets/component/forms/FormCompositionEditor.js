@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../styles/forms.css';
 
-class FormFirstInsert extends React.Component{
+class FormCompositionEditor extends React.Component{
 
     constructor(props) {
         super(props)
@@ -68,4 +68,4 @@ class FormFirstInsert extends React.Component{
 }
 
 
-export default FormFirstInsert
+export default FormCompositionEditor

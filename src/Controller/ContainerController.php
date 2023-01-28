@@ -65,8 +65,8 @@ class ContainerController extends AbstractController
             switch ($method) {
                 case 'GET':
                     $text = $request->query->get('text');
-                    dump($containerRepository->finByName($text));
-                    return new JsonResponse($serializationService->serialize($containerRepository->finByName($text),'researchFormCompContainer:read'));
+                    dump($creatorRepository->finByName($text));
+                    return new JsonResponse($serializationService->serialize($creatorRepository->finByName($text),'researchFormContCreator:read'));
                     break;
                 case 'POST':
                     $container = new Container();

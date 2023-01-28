@@ -1,7 +1,7 @@
 import React from "react";
 import FormResearch from "../forms/FormResearch";
 import ItemContainer from "../items/ItemContainer";
-import FormContainerFastAdd from "../forms/FormContainerFastAdd";
+import FormContainerFastAdd from "../forms/fastAdd/FormContainerFastAdd";
 
 
 class ListContainers extends React.Component {
@@ -43,6 +43,7 @@ class ListContainers extends React.Component {
     }
 
     onChange(event){
+
         let value = event.target.value ? event.target.value : ''
         this.setState({searchValue:event.target.value})
         this.getList(value)

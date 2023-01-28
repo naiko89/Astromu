@@ -1,32 +1,32 @@
 import React from 'react';
-import ColumnCard from "../editor/EditorComposition";
-import ListCompositions from "../component/lists/ListCompositions"
+// import ColumnCard from "../editor/EditorComposition";
+import ListCreator from "../component/lists/ListCreator"
 
 class ShowCreator extends  React.Component {
     constructor(props) {
         super(props);
         const user = props.nomeUser
         this.state = {
-            compositionEdit: { trigger:false },
-            header: { links: [ { name:'#home', ID:0 }, { name:'#profile', ID:1 }, { name:'#messages', ID:2 } ] },
-            layout: { component:'FirstViewer' },
-            composition: [ ],
+            creatorEdit: { trigger:false },
+            // header: { links: [ { name:'#home', ID:0 }, { name:'#profile', ID:1 }, { name:'#messages', ID:2 } ] },
+            // layout: { component:'FirstViewer' },
+            creator: [ ],
             handleValues: { trigger:false, textarea:'', id:'', select:false },
-            viewMode: {show:false, composition: {id:null}}
+            viewMode: {show:false, creator: {id:null}}
         }
 
-        this.handleShowCompositionEdit = this.handleShowCompositionEdit.bind(this)
-        this.handleHideCompositionEdit = this.handleHideCompositionEdit.bind(this)
+        this.handleShowCreatorEdit = this.handleShowCreatorEdit.bind(this)
+        this.handleHideCreatorEdit = this.handleHideCreatorEdit.bind(this)
     }
 
-    handleShowCompositionEdit(id){
+    handleShowCreatorEdit(id){
         let tempState = this.state
         tempState.viewMode.show = true
-        tempState.viewMode.composition.id = id
+        tempState.viewMode.creator.id = id
         this.setState(tempState)
     }
 
-    handleHideCompositionEdit(){
+    handleHideCreatorEdit(){
         let tempState = this.state
         tempState.viewMode.show = false
         this.setState(tempState)
@@ -34,10 +34,9 @@ class ShowCreator extends  React.Component {
 
 
     render() {
-
         let View = this.state.viewMode.show ?
-             <ColumnCard id={this.state.viewMode.composition.id} hideEditComp={this.handleHideCompositionEdit}></ColumnCard> :
-             <ListCompositions showEditComp={this.handleShowCompositionEdit}  id={this.state.viewMode.composition.id}></ListCompositions>;
+             <div>editor del creator</div> :
+             <ListCreator showEditComp={this.handleShowCreatorEdit}  id={this.state.viewMode.creator.id}></ListCreator>;
 
         return (
             <div className="container-fluid m-0 p-0" style={{height: '93vh'}}>

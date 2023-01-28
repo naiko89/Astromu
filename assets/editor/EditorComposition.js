@@ -1,5 +1,5 @@
 import React from "react";
-import formFirstInsert from "../component/forms/FormFirstInsert";
+import formFirstInsert from "../component/forms/FormCompositionEditor";
 import {ResizeLayout} from "../component/layout/ResizeLayout";
 import ItemCompositionEditorPiece from "../component/items/ItemCompositionEditorPiece";
 import update from "immutability-helper";

@@ -9,7 +9,7 @@
 import './styles/app.css'
 import './styles/navbar.css'
 import './styles/card.css'
-import './styles/forms.css';
+import './styles/forms.css'
 
 
 import $ from "jquery"
@@ -26,11 +26,12 @@ import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import ShowCompositions from "./pages/ShowCompositions"
 import ShowContainers from "./pages/ShowContainers"
+import ShowCreator from "./pages/ShowCreator"
 import Main from "./Main"
 import PageOne from "./pages/DropDownPages/PageOne"
 import PageTwo from "./pages/DropDownPages/PageTwo"
 import PageThree from "./pages/DropDownPages/PageThree"
-import ShowCreator from "./pages/ShowCreator";
+
 
 require ('/assets/Main')
 
@@ -42,10 +43,12 @@ ReactDOM.createRoot(document.getElementById("app")).render(
                     <Route path="/index/show_comp" element={<ShowCompositions />} />
                     <Route path="/index/show_cont" element={<ShowContainers />} />
                     <Route path="/index/show_crea" element={<ShowCreator />} />
-                    <Route path="/index/page-one" element={<PageOne />} />
-                    <Route path="/index/page-two" element={<PageTwo />} />
-                    <Route path="/index/page-three" element={<PageThree />} />
+
                 </Route>
             </Routes>
         </BrowserRouter>
 );
+/*
+*
+*
+* */

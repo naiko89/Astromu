@@ -7,14 +7,14 @@ class FormCompositionFastAdd extends React.Component{
     constructor(props) {
         super(props);
         this.props=props
-        this.state = { form: { composition: '' ,container: '',containerId:'', creatorId: '', containerSel: false },
-            list: { container: '', creator: '' } };
+        this.state = { form: { container: '',creator:'', creatorId: '', creatorSel: false },
+            list: { creator: '' } };
 
         this.handleShow = this.handleShow.bind(this)
         this.handleClose = this.handleClose.bind(this)
         this.onChangeContainer = this.onChangeContainer.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
-        this.selectContainer = this.selectContainer.bind(this)
+        this.selectCreator = this.selectCreator.bind(this)
 
     }
 
@@ -29,16 +29,17 @@ class FormCompositionFastAdd extends React.Component{
     handleSubmit(event) {
         event.preventDefault()
         let uriFragment = queryString.stringify(this.state.form)
-        if(this.state.list.container && this.state.list.container.some(element => element.name === this.state.form.container))
+
+        if(this.state.list.creator && this.state.list.creator.some(element => element.name === this.state.form.creator))
         {
-            fetch(`/api/compositions/form?${uriFragment}`, {
+            fetch(`/api/container/form?${uriFragment}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
             })
                 .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
                 .then(data => {
-                    this.setState({ form: { composition: '' ,container: '', creator: '' },
-                        list: { container: '', creator: '' } })
+                    this.setState({ form: { container: '', creator: '', creatorId: '', creatorSel: false },
+                        list: { creator: '' } })
                     this.handleClose()
                     this.props.childRend()
 
@@ -51,54 +52,54 @@ class FormCompositionFastAdd extends React.Component{
         }
     }
 
-    onChangeComposition = (event) =>{
+    onChangeContainer = (event) =>{
         let tempState= this.state;
-        tempState.form.composition = event.target.value;
+        tempState.form.container = event.target.value;
         this.setState(tempState);
     }
 
-    onChangeContainer = (event) =>{ //-->this search could be better, we have the container in the input for more targeted search
+    onChangeCreator = (event) =>{ //-->this search could be better, we have the container in the input for more targeted search
         let tempState= this.state
-        let uriFragment = ''
-        if(!tempState.form.containerSel) {
-            tempState.form.container = event.target.value
-            uriFragment = queryString.stringify({'text' : tempState.form.container})
+        let uriFragment
+        if(!tempState.form.creatorSel) {
+            tempState.form.creator = event.target.value
+            uriFragment = queryString.stringify({'text' : tempState.form.creator})
             if (event.target.value !== '') {
-                fetch(`/api/compositions/form?${uriFragment}`, {
+                fetch(`/api/container/form?${uriFragment}`, {
                     method: 'GET',
                     headers: {'Content-Type': 'application/json'}
                 })
                     .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
                     .then(data => {
-                        tempState.list.container = JSON.parse(data)
+                        tempState.list.creator = JSON.parse(data)
                         this.setState(tempState)
                     })
                     .catch(error => console.error(error));
             } else {
-                tempState.list.container = ''
+                tempState.list.creator = ''
                 this.setState(tempState)
             }
         }
         else{
-            tempState.list.container = ''
-            tempState.form.containerSel= false
+            tempState.list.creator = ''
+            tempState.form.creatorSel= false
             this.setState(tempState)
         }
 
     }
 
-    selectContainer = (item) =>{
+    selectCreator = (item) =>{
         let tSta=this.state
+
         this.setState({
             ...tSta,
             form: {
                 ...tSta.form,
                 ...Object.fromEntries(
                     Object.entries({
-                        container: item.name,
-                        containerSel: true,
-                        containerId: item.id,
-                        creatorId: item.creator.id
+                        creator: item.name,
+                        creatorSel: true,
+                        creatorId: item.id
                     })
                 )
             }
@@ -107,9 +108,9 @@ class FormCompositionFastAdd extends React.Component{
     render() {
 
         let display=this.props.display
-        let contSel = this.state.form.containerSel
-        let listContainer = Object.values(this.state.list.container).map((item, index) => {
-                return <ListGroup.Item key={index} value={item.name} onClick={()=>this.selectContainer(item)}>
+        let contSel = this.state.form.creatorSel
+        let listCreator = Object.values(this.state.list.creator).map((item, index) => {
+                return <ListGroup.Item key={index} value={item.name} onClick={()=>this.selectCreator(item)}>
                     { item.name }
                 </ListGroup.Item>
         })
@@ -123,12 +124,12 @@ class FormCompositionFastAdd extends React.Component{
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome" onChange={this.onChangeComposition} value={this.state.form.composition}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome" onChange={this.onChangeContainer} value={this.state.form.container}/>
                         </Form.Group>
                         <Form.Group controlId="formValTwo" className={'mb-2'}>
-                            <Form.Control type="text" list="containerOptions" autoComplete="off" placeholder="Aggiungi Container" onChange={(e) => this.onChangeContainer(e)} value={this.state.form.container}/>
+                            <Form.Control type="text" list="containerOptions" autoComplete="off" placeholder="Aggiungi Container" onChange={(e) => this.onChangeCreator(e)} value={this.state.form.creator}/>
                             <ListGroup>
-                                {contSel ? '' : listContainer}
+                                {contSel ? '' : listCreator}
                             </ListGroup>
                         </Form.Group>
                     </Modal.Body>
