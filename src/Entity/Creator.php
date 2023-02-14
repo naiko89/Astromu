@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CreatorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -14,23 +15,58 @@ class Creator
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['compositionsList:read','creatorList:read','researchFormCompContainer:read','researchFormContCreator:read'])]
+    #[Groups(['compositionsList:read','containerList:read','creatorList:read','groupList:read',
+        'researchFormCompContainer:read','researchFormContAuthor:read',
+        'researchFormCreatorGroup:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['compositionsList:read','creatorList:read','researchFormCompCreator:read','researchFormContCreator:read'])]
+    #[Groups(['compositionsList:read','containerList:read','creatorList:read','groupList:read',
+        'researchFormCompCreator:read','researchFormContAuthor:read',
+        'researchFormCreatorGroup:read'])]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Container::class, orphanRemoval: true)]
-    private Collection $containers;
+    #[ORM\ManyToOne(inversedBy: 'creatorsSubNation')]
+    private ?SubNation $subNation = null;
 
-    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Composition::class, orphanRemoval: true)]
-    private Collection $compositions;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $surname = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateBirth = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $CompNumber = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $ContNumber = null;
+
+    #[ORM\ManyToOne(inversedBy: 'cratorsNation')]
+    private ?Nation $nation = null;
+
+    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: AssociationCompo::class)]
+    private Collection $associationComp;
+
+    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: AssociationConta::class)]
+    private Collection $associationCont;
+
+    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: BuildingGroupCreator::class)]
+    private Collection $associationGroup;
 
     public function __construct()
     {
-        $this->containers = new ArrayCollection();
-        $this->compositions = new ArrayCollection();
+        $this->associationComp = new ArrayCollection();
+        $this->associationCont = new ArrayCollection();
+        $this->associationGroup = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -50,30 +86,139 @@ class Creator
         return $this;
     }
 
-    /**
-     * @return Collection<int, Container>
-     */
-    public function getContainers(): Collection
+
+    public function getNation(): ?Nation
     {
-        return $this->containers;
+        return $this->nation;
     }
 
-    public function addContainer(Container $container): self
+    public function setNation(?Nation $nation): self
     {
-        if (!$this->containers->contains($container)) {
-            $this->containers->add($container);
-            $container->setCreator($this);
+        $this->nation = $nation;
+
+        return $this;
+    }
+
+    public function getSubNation(): ?SubNation
+    {
+        return $this->subNation;
+    }
+
+    public function setSubNation(?SubNation $subNation): self
+    {
+        $this->subNation = $subNation;
+
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): self
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getSurname(): ?string
+    {
+        return $this->surname;
+    }
+
+    public function setSurname(string $surname): self
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getDateBirth(): ?\DateTimeInterface
+    {
+        return $this->dateBirth;
+    }
+
+    public function setDateBirth(\DateTimeInterface $dateBirth): self
+    {
+        $this->dateBirth = $dateBirth;
+
+        return $this;
+    }
+
+    public function getCompNumber(): ?int
+    {
+        return $this->CompNumber;
+    }
+
+    public function setCompNumber(?int $CompNumber): self
+    {
+        $this->CompNumber = $CompNumber;
+
+        return $this;
+    }
+
+    public function getContNumber(): ?int
+    {
+        return $this->ContNumber;
+    }
+
+    public function setContNumber(?int $ContNumber): self
+    {
+        $this->ContNumber = $ContNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AssociationCompo>
+     */
+    public function getAssociationComp(): Collection
+    {
+        return $this->associationComp;
+    }
+
+    public function addAssociationComp(AssociationCompo $associationComp): self
+    {
+        if (!$this->associationComp->contains($associationComp)) {
+            $this->associationComp->add($associationComp);
+            $associationComp->setCreator($this);
         }
 
         return $this;
     }
 
-    public function removeContainer(Container $container): self
+    public function removeAssociationComp(AssociationCompo $associationComp): self
     {
-        if ($this->containers->removeElement($container)) {
+        if ($this->associationComp->removeElement($associationComp)) {
             // set the owning side to null (unless already changed)
-            if ($container->getCreator() === $this) {
-                $container->setCreator(null);
+            if ($associationComp->getCreator() === $this) {
+                $associationComp->setCreator(null);
             }
         }
 
@@ -81,32 +226,63 @@ class Creator
     }
 
     /**
-     * @return Collection<int, Composition>
+     * @return Collection<int, AssociationConta>
      */
-    public function getCompositions(): Collection
+    public function getAssociationCont(): Collection
     {
-        return $this->compositions;
+        return $this->associationCont;
     }
 
-    public function addComposition(Composition $composition): self
+    public function addAssociationCont(AssociationConta $associationCont): self
     {
-        if (!$this->compositions->contains($composition)) {
-            $this->compositions->add($composition);
-            $composition->setCreator($this);
+        if (!$this->associationCont->contains($associationCont)) {
+            $this->associationCont->add($associationCont);
+            $associationCont->setCreator($this);
         }
 
         return $this;
     }
 
-    public function removeComposition(Composition $composition): self
+    public function removeAssociationCont(AssociationConta $associationCont): self
     {
-        if ($this->compositions->removeElement($composition)) {
+        if ($this->associationCont->removeElement($associationCont)) {
             // set the owning side to null (unless already changed)
-            if ($composition->getCreator() === $this) {
-                $composition->setCreator(null);
+            if ($associationCont->getCreator() === $this) {
+                $associationCont->setCreator(null);
             }
         }
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, BuildingGroupCreator>
+     */
+    public function getAssociationGroup(): Collection
+    {
+        return $this->associationGroup;
+    }
+
+    public function addAssociationGroup(BuildingGroupCreator $associationGroup): self
+    {
+        if (!$this->associationGroup->contains($associationGroup)) {
+            $this->associationGroup->add($associationGroup);
+            $associationGroup->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssociationGroup(BuildingGroupCreator $associationGroup): self
+    {
+        if ($this->associationGroup->removeElement($associationGroup)) {
+            // set the owning side to null (unless already changed)
+            if ($associationGroup->getCreator() === $this) {
+                $associationGroup->setCreator(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

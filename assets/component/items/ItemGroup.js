@@ -1,9 +1,12 @@
 import React from "react";
 
-const ItemComposition = (props) => {
+const ItemContainer = (props) => {
 
     const handleDelete = async () => {
-        const response = await fetch(`/api/compositions?id=${props.value.id}`, {
+
+        alert('Elimino il Group e le Associazioni ai Container, Composition e Alle Associazioni Con i Creator')
+
+        const response = await fetch(`/api/group?id=${props.value.id}`, {
             method: 'DELETE',
         });
         if (response.ok) {
@@ -15,9 +18,8 @@ const ItemComposition = (props) => {
     }
 
     const handleModify = () => {
-        console.log('queste')
         console.log(props)
-        props.showEditComp(props.value.id)
+        props.showEditCrea(props.value.id)
     }
 
 
@@ -35,6 +37,7 @@ const ItemComposition = (props) => {
                                     <button type="button" className="btn btn-sm btn-outline-secondary" onClick={handleDelete}>Elimina</button>
                                 </div>
                                 <div className="d-flex flex-column text-muted">
+                                    <small className={'font-bold'}></small>
                                 </div>
                             </div>
                         </div>
@@ -43,4 +46,4 @@ const ItemComposition = (props) => {
     );
 }
 
-export default ItemComposition;
+export default ItemContainer;

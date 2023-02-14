@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ContainerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -21,18 +22,29 @@ class Container
     #[Groups(['compositionsList:read','containerList:read','researchFormCompContainer:read'])]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'containers')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['researchFormCompContainer:read','containerList:read','researchFormContCreator:read'])]
-    private ?Creator $creator = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $date_publish = null;
 
-    #[ORM\OneToMany(mappedBy: 'container', targetEntity: Composition::class, orphanRemoval: true)]
-    private Collection $compositions;
+    #[ORM\Column(nullable: true)]
+    private ?int $comp_number = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $genre = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $label = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $productor = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prize_temp = null;
 
     public function __construct()
-    {
-        $this->compositions = new ArrayCollection();
-    }
+    {}
 
     public function getId(): ?int
     {
@@ -51,44 +63,87 @@ class Container
         return $this;
     }
 
-    public function getCreator(): ?Creator
+
+    public function getDatePublish(): ?\DateTimeInterface
     {
-        return $this->creator;
+        return $this->date_publish;
     }
 
-    public function setCreator(?Creator $creator): self
+    public function setDatePublish(\DateTimeInterface $date_publish): self
     {
-        $this->creator = $creator;
+        $this->date_publish = $date_publish;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Composition>
-     */
-    public function getCompositions(): Collection
+    public function getCompNumber(): ?int
     {
-        return $this->compositions;
+        return $this->comp_number;
     }
 
-    public function addComposition(Composition $composition): self
+    public function setCompNumber(?int $comp_number): self
     {
-        if (!$this->compositions->contains($composition)) {
-            $this->compositions->add($composition);
-            $composition->setContainer($this);
-        }
+        $this->comp_number = $comp_number;
 
         return $this;
     }
 
-    public function removeComposition(Composition $composition): self
+    public function getGenre(): ?string
     {
-        if ($this->compositions->removeElement($composition)) {
-            // set the owning side to null (unless already changed)
-            if ($composition->getContainer() === $this) {
-                $composition->setContainer(null);
-            }
-        }
+        return $this->genre;
+    }
+
+    public function setGenre(?string $genre): self
+    {
+        $this->genre = $genre;
+
+        return $this;
+    }
+
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(?string $label): self
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    public function getProductor(): ?string
+    {
+        return $this->productor;
+    }
+
+    public function setProductor(?string $productor): self
+    {
+        $this->productor = $productor;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getPrizeTemp(): ?string
+    {
+        return $this->prize_temp;
+    }
+
+    public function setPrizeTemp(?string $prize_temp): self
+    {
+        $this->prize_temp = $prize_temp;
 
         return $this;
     }

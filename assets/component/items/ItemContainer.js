@@ -3,6 +3,9 @@ import React from "react";
 const ItemContainer = (props) => {
 
     const handleDelete = async () => {
+
+        alert(' Elimini sia il Contenitore e le Creazioni Associate ')
+
         const response = await fetch(`/api/container?id=${props.value.id}`, {
             method: 'DELETE',
         });
@@ -35,7 +38,6 @@ const ItemContainer = (props) => {
                                     <button type="button" className="btn btn-sm btn-outline-secondary" onClick={handleDelete}>Elimina</button>
                                 </div>
                                 <div className="d-flex flex-column text-muted">
-                                    <small className={'font-bold'}>{props.value.creator.name}</small>
                                 </div>
                             </div>
                         </div>

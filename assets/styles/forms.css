@@ -7,3 +7,11 @@
 .modal-animation{
    animation: fadeIn 0.5s ease-in;
 }
+
+.item-search-creator{
+   background-color: #E3F2FD;
+}
+
+.item-search-group{
+   background-color: #E8F5E9;
+}

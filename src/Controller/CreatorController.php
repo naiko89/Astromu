@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Creator;
+use App\Repository\AssociationContaRepository;
+use App\Repository\BuildingGroupCreatorRepository;
 use App\Repository\CompositionRepository;
 use App\Repository\ContainerRepository;
 use App\Repository\CreatorRepository;
@@ -19,7 +21,8 @@ class CreatorController extends AbstractController
      * @Route("/api/creator", name="creator_index", methods={"GET", "POST", "PUT", "DELETE"})
      */
     public function index(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        , SerializationService $serializationService): JsonResponse
+        ,AssociationContaRepository $associationContaRepository, SerializationService $serializationService
+        ,BuildingGroupCreatorRepository $buildingGroupCreatorRepository): JsonResponse
     {
 
             $method = $request->getMethod();
@@ -27,7 +30,7 @@ class CreatorController extends AbstractController
             switch ($method) {
                 case 'GET':
                     dump('sei del get del creatore');
-                    dump($serializationService->serialize($creatorRepository->finByName($text),'creatorList:read'));
+                    dump($serializationService->serialize($creatorRepository->findByName($text),'creatorList:read'));
                     if($text === null || $text === ''){
                         return new JsonResponse($serializationService->serialize(
                             $creatorRepository->findBy([],['name' => 'ASC'],30),'creatorList:read')
@@ -35,7 +38,7 @@ class CreatorController extends AbstractController
                     }
                     else{
                         return new JsonResponse($serializationService->serialize(
-                            $creatorRepository->finByName($text.'%'),'creatorList:read')
+                            $creatorRepository->findByName($text.'%'),'creatorList:read')
                         );
                     }
                     break;
@@ -48,7 +51,13 @@ class CreatorController extends AbstractController
                     // Aggiorna una composizione esistente
                     break;
                 case 'DELETE':
-                    $creatorRepository->remove($creatorRepository->findOneBy(['id' => $request->query->get('id')]), true);
+                    foreach ($buildingGroupCreatorRepository->findBy(['creator' => $request->query->get('id')]) as $itemEntity) {
+                            $buildingGroupCreatorRepository->remove($itemEntity, true); //-->delete the association with Group
+                    }
+                    foreach ($associationContaRepository->findBy(['creator' => $request->query->get('id')]) as $itemEntity) {
+                        $associationContaRepository->remove($itemEntity, true); //-->delete the association with Contanier
+                    }
+                    $creatorRepository->remove($creatorRepository->find($request->query->get('id')), true);
                     return new JsonResponse([true]);
                     break;
             }
@@ -67,13 +76,9 @@ class CreatorController extends AbstractController
             $method = $request->getMethod();
             switch ($method) {
                 case 'GET':
-                    //$text = $request->query->get('text');
-                    //return new JsonResponse($serializationService->serialize($creatorRepository->finByName($text),'researchFormContCreator:read'));
                     break;
                 case 'POST':
-                    // Crea una nuova composizione
                     $creator = new Creator();
-                    dump($request->query->get('creator'));
                     $creator->setName($request->query->get('creator'));
                     $creatorRepository->save($creator, true);
                     return new JsonResponse([true]);

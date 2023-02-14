@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\CompositionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -20,15 +23,27 @@ class Composition
     #[Groups('compositionsList:read')]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'compositions')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups('compositionsList:read')]
-    private ?Creator $creator = null;
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $duration = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $base_text = null;
 
     #[ORM\ManyToOne(inversedBy: 'compositions')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups('compositionsList:read')]
-    private ?Container $container = null;
+    private ?Group $team = null;
+
+    #[ORM\OneToMany(mappedBy: 'composition', targetEntity: AssociationCompo::class, orphanRemoval: true)]
+    private Collection $assocaitionComp;
+
+    #[ORM\OneToMany(mappedBy: 'composition', targetEntity: AssociationConta::class)]
+    private Collection $associationCont;
+
+
+    public function __construct()
+    {
+        $this->assocaitionComp = new ArrayCollection();
+        $this->associationCont = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -47,26 +62,98 @@ class Composition
         return $this;
     }
 
-    public function getCreator(): ?Creator
+    public function getDuration(): ?\DateTimeInterface
     {
-        return $this->creator;
+        return $this->duration;
     }
 
-    public function setCreator(?Creator $creator): self
+    public function setDuration(?\DateTimeInterface $duration): self
     {
-        $this->creator = $creator;
+        $this->duration = $duration;
 
         return $this;
     }
 
-    public function getContainer(): ?Container
+    public function getBaseText(): ?string
     {
-        return $this->container;
+        return $this->base_text;
     }
 
-    public function setContainer(?Container $container): self
+    public function setBaseText(?string $base_text): self
     {
-        $this->container = $container;
+        $this->base_text = $base_text;
+
+        return $this;
+    }
+
+    public function getTeam(): ?Group
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Group $team): self
+    {
+        $this->team = $team;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AssociationCompo>
+     */
+    public function getAssocaitionComp(): Collection
+    {
+        return $this->assocaitionComp;
+    }
+
+    public function addAssocaitionComp(AssociationCompo $assocaitionComp): self
+    {
+        if (!$this->assocaitionComp->contains($assocaitionComp)) {
+            $this->assocaitionComp->add($assocaitionComp);
+            $assocaitionComp->setComposition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssocaitionComp(AssociationCompo $assocaitionComp): self
+    {
+        if ($this->assocaitionComp->removeElement($assocaitionComp)) {
+            // set the owning side to null (unless already changed)
+            if ($assocaitionComp->getComposition() === $this) {
+                $assocaitionComp->setComposition(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AssociationConta>
+     */
+    public function getAssociationCont(): Collection
+    {
+        return $this->associationCont;
+    }
+
+    public function addAssociationCont(AssociationConta $associationCont): self
+    {
+        if (!$this->associationCont->contains($associationCont)) {
+            $this->associationCont->add($associationCont);
+            $associationCont->setComposition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssociationCont(AssociationConta $associationCont): self
+    {
+        if ($this->associationCont->removeElement($associationCont)) {
+            // set the owning side to null (unless already changed)
+            if ($associationCont->getComposition() === $this) {
+                $associationCont->setComposition(null);
+            }
+        }
 
         return $this;
     }

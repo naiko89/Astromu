@@ -13,7 +13,7 @@ use App\Repository\ContainerRepository;
 use App\Repository\CreatorRepository;
 
 use App\Service\SerializationService;
-
+use Vanderlee\Syllable\Syllable;
 
 
 class CompositionsController extends AbstractController
@@ -26,6 +26,10 @@ class CompositionsController extends AbstractController
                           SerializationService $serializationService): JsonResponse
     {
         $method = $request->getMethod();
+
+        $syllable = new Syllable('it');
+        dump(str_replace("&shy;", "-",$syllable->hyphenateText('ciao mi chiamo nicola')));
+
         switch ($method) {
             case 'GET':
                 $text=$request->query->get('text');
@@ -37,7 +41,7 @@ class CompositionsController extends AbstractController
                 }
                 else{
                     return new JsonResponse($serializationService->serialize(
-                        $compositionRepository->finByName($text.'%'),'compositionsList:read')
+                        $compositionRepository->findByName($text.'%'),'compositionsList:read')
                     );
                 }
                 break;
@@ -75,8 +79,8 @@ class CompositionsController extends AbstractController
         switch ($method) {
             case 'GET':
                 $text=$request->query->get('text');
-                dump($containerRepository->finByName($text));
-                return new JsonResponse($serializationService->serialize($containerRepository->finByName($text),'researchFormCompContainer:read'));
+                dump($containerRepository->findByName($text));
+                return new JsonResponse($serializationService->serialize($containerRepository->findByName($text),'researchFormCompContainer:read'));
                 break;
             case 'POST':
                 $composition = new Composition();

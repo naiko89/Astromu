@@ -3,6 +3,9 @@ import React from "react";
 const ItemContainer = (props) => {
 
     const handleDelete = async () => {
+
+        alert(' Elimino le associazioni ai Container, alle Composition e ai Group Relativi ai Creator')
+
         const response = await fetch(`/api/creator?id=${props.value.id}`, {
             method: 'DELETE',
         });

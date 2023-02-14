@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e84d14a2747d4e83ff040687bc903e7",
+    "content-hash": "8b886d219e0b87eaf9a1a09916cbab68",
     "packages": [
         {
             "name": "api-platform/core",
@@ -6707,6 +6707,62 @@
             "time": "2022-09-28T08:42:51+00:00"
         },
         {
+            "name": "vanderlee/syllable",
+            "version": "1.5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vanderlee/phpSyllable.git",
+                "reference": "75410e1ccc1159f073f8671789df69c7f7d073cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vanderlee/phpSyllable/zipball/75410e1ccc1159f073f8671789df69c7f7d073cb",
+                "reference": "75410e1ccc1159f073f8671789df69c7f7d073cb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "codacy/coverage": "1.*",
+                "phpmd/phpmd": "2.6.0",
+                "phpunit/phpunit": "6.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vanderlee\\Syllable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Text syllable splitting and hyphenation using Frank M. Liang's TeX algorithm.",
+            "homepage": "https://github.com/vanderlee/phpSyllable",
+            "keywords": [
+                "dash",
+                "hyphen",
+                "hyphenate",
+                "hyphenation",
+                "language",
+                "locale",
+                "split",
+                "syllable",
+                "syllables",
+                "text",
+                "words"
+            ],
+            "support": {
+                "issues": "https://github.com/vanderlee/phpSyllable/issues",
+                "source": "https://github.com/vanderlee/phpSyllable/"
+            },
+            "time": "2019-12-16T12:52:46+00:00"
+        },
+        {
             "name": "webmozart/assert",
             "version": "1.11.0",
             "source": {
@@ -7142,5 +7198,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

@@ -25,16 +25,17 @@ class Navbar extends  React.Component{
                         <div className="collapse navbar-collapse" id="navbarToggler" >
                             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                                 <Buttons className="nav-link border-bottom-2 text-center p-0 m-0"
-                                         classIcon={"bi bi-book-fill navbar-icon"}
-                                         urlTo="/index/show_comp" text="Composizioni"></Buttons>
-
+                                         classIcon={"bi bi-person-fill navbar-icon"}
+                                         urlTo="/index/show_crea" text="Creatori"></Buttons>
+                                <Buttons className="nav-link border-bottom-2 text-center p-0 m-0"
+                                         classIcon={"bi bi-people-fill navbar-icon"}
+                                         urlTo="/index/show_group" text="Gruppi"></Buttons>
                                 <Buttons className="nav-link border-bottom-2 text-center p-0 m-0"
                                          classIcon={"bi bi-archive navbar-icon"}
                                          urlTo="/index/show_cont" text="Contenitori"></Buttons>
-
                                 <Buttons className="nav-link border-bottom-2 text-center p-0 m-0"
-                                         classIcon={"bi bi-person-bounding-box navbar-icon"}
-                                         urlTo="/index/show_crea" text="Creatori"></Buttons>
+                                         classIcon={"bi bi-book-fill navbar-icon"}
+                                         urlTo="/index/show_comp" text="Composizioni"></Buttons>
                             </ul>
                             <ul className="navbar-nav d-flex float-end">
                                    <li className="nav-item float-end">

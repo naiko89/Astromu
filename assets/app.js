@@ -31,6 +31,7 @@ import Main from "./Main"
 import PageOne from "./pages/DropDownPages/PageOne"
 import PageTwo from "./pages/DropDownPages/PageTwo"
 import PageThree from "./pages/DropDownPages/PageThree"
+import ShowGroup from "./pages/ShowGroup";
 
 
 require ('/assets/Main')
@@ -43,12 +44,13 @@ ReactDOM.createRoot(document.getElementById("app")).render(
                     <Route path="/index/show_comp" element={<ShowCompositions />} />
                     <Route path="/index/show_cont" element={<ShowContainers />} />
                     <Route path="/index/show_crea" element={<ShowCreator />} />
+                    <Route path="/index/show_group" element={<ShowGroup />} />
 
                 </Route>
             </Routes>
         </BrowserRouter>
 );
 /*
-*
+* Modified the database structure, made relations for the tables.
 *
 * */

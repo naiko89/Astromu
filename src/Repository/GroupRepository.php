@@ -2,28 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Composition;
-use App\Entity\Container;
+use App\Entity\Group;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use http\Env\Response;
 
 /**
- * @extends ServiceEntityRepository<Container>
+ * @extends ServiceEntityRepository<Group>
  *
- * @method Container|null find($id, $lockMode = null, $lockVersion = null)
- * @method Container|null findOneBy(array $criteria, array $orderBy = null)
- * @method Container[]    findAll()
- * @method Container[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Group|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Group|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Group[]    findAll()
+ * @method Group[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ContainerRepository extends ServiceEntityRepository
+class GroupRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Container::class);
+        parent::__construct($registry, Group::class);
     }
 
-    public function save(Container $entity, bool $flush = false): void
+    public function save(Group $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -32,7 +30,7 @@ class ContainerRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Container $entity, bool $flush = false): void
+    public function remove(Group $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -45,36 +43,34 @@ class ContainerRepository extends ServiceEntityRepository
 
         return $this->getEntityManager()->createQueryBuilder()
             ->select('o')
-            ->from(Container::class, 'o')
+            ->from(Group::class, 'o')
             ->where('o.name LIKE :name')
             ->setParameter('name', '%'.$value.'%')
-            ->orderBy('o.name', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
 
     }
 
-
 //    /**
-//     * @return Container[] Returns an array of Container objects
+//     * @return Group[] Returns an array of Group objects
 //     */
 //    public function findByExampleField($value): array
 //    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
+//        return $this->createQueryBuilder('g')
+//            ->andWhere('g.exampleField = :val')
 //            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
+//            ->orderBy('g.id', 'ASC')
 //            ->setMaxResults(10)
 //            ->getQuery()
 //            ->getResult()
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Container
+//    public function findOneBySomeField($value): ?Group
 //    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
+//        return $this->createQueryBuilder('g')
+//            ->andWhere('g.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()
 //            ->getOneOrNullResult()
