@@ -87,10 +87,10 @@ class ContainerController extends AbstractController
                         $association= new AssociationConta();
                         switch ($item->type) {
                             case "creator":
-                                $association->setCreator($creatorRepository->find($item->id));
+                                $association->setCreator($creatorRepository->find($item->id))->setCreation(true);
                                 break;
                             case "group":
-                                $association->setTeam($groupRepository->find($item->id));
+                                $association->setTeam($groupRepository->find($item->id))->setCreation(true);
                                 break;
                         }
 

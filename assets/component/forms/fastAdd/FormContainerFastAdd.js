@@ -82,7 +82,6 @@ class FormContainerFastAdd extends React.Component{
                     .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
                     .then(data => {
                         tempState.list.authors = JSON.parse(data)
-                        //console.log(tempState.list.authors)
                         this.setState(tempState)
                     })
                     .catch(error => console.error(error));
@@ -92,6 +91,7 @@ class FormContainerFastAdd extends React.Component{
             }
         }
         else{
+            alert('vuoto')
             tempState.list.authors = ''
             tempState.form.authorSel= false
             this.setState(tempState)
@@ -132,7 +132,7 @@ class FormContainerFastAdd extends React.Component{
 
         let display=this.props.display
         let contSel = this.state.form.authorSel
-        let listAuthor = this.state.list.authors || [{creator:[], group:[]}]
+        let listAuthor = this.state.list.authors || {creator:[], group:[]}
 
         let authorListMerge = listAuthor.creator
             .map((item, index) => {

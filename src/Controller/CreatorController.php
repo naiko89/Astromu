@@ -24,7 +24,6 @@ class CreatorController extends AbstractController
         ,AssociationContaRepository $associationContaRepository, SerializationService $serializationService
         ,BuildingGroupCreatorRepository $buildingGroupCreatorRepository): JsonResponse
     {
-
             $method = $request->getMethod();
             $text = $request->query->get('text');
             switch ($method) {

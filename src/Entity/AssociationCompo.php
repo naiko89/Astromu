@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AssociationCompoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -19,15 +21,15 @@ class AssociationCompo
     #[Groups(['groupList:read'])]
     private ?bool $creation = null;
 
-    #[ORM\ManyToOne(inversedBy: 'associationComp')]
-    private ?Creator $creator = null;
+    #[ORM\ManyToOne(inversedBy: 'assoChain')]
+    private ?AssociationConta $associationConta = null;
 
-    #[ORM\ManyToOne(inversedBy: 'associationComp')]
-    private ?Group $team = null;
-
-    #[ORM\ManyToOne(inversedBy: 'associationComp')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'assoChain')]
     private ?Composition $composition = null;
+
+    public function __construct()
+    {
+    }
 
     public function getId(): ?int
     {
@@ -46,26 +48,14 @@ class AssociationCompo
         return $this;
     }
 
-    public function getCreator(): ?Creator
+    public function getAssociationConta(): ?AssociationConta
     {
-        return $this->creator;
+        return $this->associationConta;
     }
 
-    public function setCreator(?Creator $creator): self
+    public function setAssociationConta(?AssociationConta $associationConta): self
     {
-        $this->creator = $creator;
-
-        return $this;
-    }
-
-    public function getTeam(): ?Group
-    {
-        return $this->team;
-    }
-
-    public function setTeam(?Group $team): self
-    {
-        $this->team = $team;
+        $this->associationConta = $associationConta;
 
         return $this;
     }

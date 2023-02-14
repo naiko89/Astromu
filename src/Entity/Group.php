@@ -63,7 +63,6 @@ class Group
     {
         $this->containers = new ArrayCollection();
         $this->compositions = new ArrayCollection();
-        $this->associationComp = new ArrayCollection();
         $this->associationCont = new ArrayCollection();
         $this->associationCreator = new ArrayCollection();
     }

@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\AssociationConta;
 use App\Entity\BuildingGroupCreator;
 use App\Entity\Group;
+use App\Repository\AssociationContaRepository;
 use App\Repository\CreatorRepository;
 use App\Repository\GroupRepository;
 use App\Repository\BuildingGroupCreatorRepository;
@@ -19,7 +21,10 @@ class GroupController extends AbstractController
     /**
      * @Route("/api/group", name="group_index", methods={"GET", "POST", "PUT", "DELETE"})
      */
-    public function index(Request $request, GroupRepository $groupRepository, SerializationService $serializationService, BuildingGroupCreatorRepository $buildingGroupCreatorRepository): JsonResponse
+    public function index(Request $request, GroupRepository $groupRepository,
+                          SerializationService $serializationService,
+                          BuildingGroupCreatorRepository $buildingGroupCreatorRepository,
+                          AssociationContaRepository $associationContaRepository): JsonResponse
     {
 
         $method = $request->getMethod();
@@ -48,8 +53,12 @@ class GroupController extends AbstractController
             case 'DELETE':
                 $idGroup = $request->query->get('id');
                 $buildingGroupCreators = $buildingGroupCreatorRepository->findBy(['team' => $idGroup]);
+                $associationContainers = $associationContaRepository->findBy(['team' => $idGroup]);
                 foreach ($buildingGroupCreators as $buildingGroupCreator) {
                     $buildingGroupCreatorRepository->remove($buildingGroupCreator, true); //->
+                }
+                foreach ($associationContainers as $associationContainer){
+                    $associationContaRepository->remove($associationContainer, true);
                 }
                 $groupRepository->remove($groupRepository->find($idGroup), true);
                 return new JsonResponse([true]);

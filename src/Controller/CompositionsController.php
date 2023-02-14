@@ -2,7 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\AssociationCompo;
 use App\Entity\Composition;
+use App\Entity\Container;
+use App\Entity\Creator;
+
+use App\Repository\AssociationCompoRepository;
+use App\Repository\AssociationContaRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,7 +34,7 @@ class CompositionsController extends AbstractController
         $method = $request->getMethod();
 
         $syllable = new Syllable('it');
-        dump(str_replace("&shy;", "-",$syllable->hyphenateText('ciao mi chiamo nicola')));
+        //dump(str_replace("&shy;", "-",$syllable->hyphenateText('ciao mi chiamo nicola')));
 
         switch ($method) {
             case 'GET':
@@ -73,7 +79,7 @@ class CompositionsController extends AbstractController
      * @Route("/api/compositions/form", name="compositions_form", methods={"GET", "POST", "PUT", "DELETE"})
      */
     public function researchForForm(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        , SerializationService $serializationService): JsonResponse
+        , SerializationService $serializationService, AssociationContaRepository $associationContaRepository, AssociationCompoRepository $associationCompoRepository): JsonResponse
     {
         $method = $request->getMethod();
         switch ($method) {
@@ -83,13 +89,18 @@ class CompositionsController extends AbstractController
                 return new JsonResponse($serializationService->serialize($containerRepository->findByName($text),'researchFormCompContainer:read'));
                 break;
             case 'POST':
+                //-->questa query adrà ad associare la composition ai container ed ai rispettivi creator...praticamete setto i creatori della composition
                 $composition = new Composition();
-                $container = $containerRepository->findOneBy(['id' => $request->query->get('containerId')]);
-                $creator= $creatorRepository->findOneBy(['id' => $request->query->get('creatorId')]);
-                $composition->setName($request->query->get('composition'))
-                    ->setContainer($container)
-                    ->setCreator($creator);
-                $compositionRepository->save($composition, true);
+                $composition->setName($request->query->get('composition'));
+                dump($request->query->get('composition').'----'. $request->query->get('containerId'));
+                $compositionRepository->save($composition);
+                $assoContainer = $associationContaRepository->findBy(['container' => $request->query->get('containerId')]);
+
+                foreach ($assoContainer as $itemEntity) {
+                    $assoChain = new AssociationCompo();
+                    $assoChain->setAssociationConta($itemEntity)->setCreation(true)->setComposition($composition);
+                    $associationCompoRepository->save($assoChain, true);
+                }
                 return new JsonResponse([true]);
                 dump('sei in post aggiungi una o più');
                 break;

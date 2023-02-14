@@ -38,11 +38,18 @@ class Composition
     #[ORM\OneToMany(mappedBy: 'composition', targetEntity: AssociationConta::class)]
     private Collection $associationCont;
 
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
+    private ?bool $isAssociated = null;
+
+    #[ORM\OneToMany(mappedBy: 'composition', targetEntity: AssociationCompo::class)]
+    private Collection $assoChain;
+
 
     public function __construct()
     {
         $this->assocaitionComp = new ArrayCollection();
         $this->associationCont = new ArrayCollection();
+        $this->assoChain = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -152,6 +159,48 @@ class Composition
             // set the owning side to null (unless already changed)
             if ($associationCont->getComposition() === $this) {
                 $associationCont->setComposition(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isIsAssociated(): ?bool
+    {
+        return $this->isAssociated;
+    }
+
+    public function setIsAssociated(bool $isAssociated): self
+    {
+        $this->isAssociated = $isAssociated;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AssociationCompo>
+     */
+    public function getAssoChain(): Collection
+    {
+        return $this->assoChain;
+    }
+
+    public function addAssoChain(AssociationCompo $assoChain): self
+    {
+        if (!$this->assoChain->contains($assoChain)) {
+            $this->assoChain->add($assoChain);
+            $assoChain->setComposition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssoChain(AssociationCompo $assoChain): self
+    {
+        if ($this->assoChain->removeElement($assoChain)) {
+            // set the owning side to null (unless already changed)
+            if ($assoChain->getComposition() === $this) {
+                $assoChain->setComposition(null);
             }
         }
 

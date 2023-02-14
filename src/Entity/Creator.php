@@ -53,9 +53,6 @@ class Creator
     #[ORM\ManyToOne(inversedBy: 'cratorsNation')]
     private ?Nation $nation = null;
 
-    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: AssociationCompo::class)]
-    private Collection $associationComp;
-
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: AssociationConta::class)]
     private Collection $associationCont;
 
@@ -64,7 +61,6 @@ class Creator
 
     public function __construct()
     {
-        $this->associationComp = new ArrayCollection();
         $this->associationCont = new ArrayCollection();
         $this->associationGroup = new ArrayCollection();
     }
@@ -191,36 +187,6 @@ class Creator
     public function setContNumber(?int $ContNumber): self
     {
         $this->ContNumber = $ContNumber;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, AssociationCompo>
-     */
-    public function getAssociationComp(): Collection
-    {
-        return $this->associationComp;
-    }
-
-    public function addAssociationComp(AssociationCompo $associationComp): self
-    {
-        if (!$this->associationComp->contains($associationComp)) {
-            $this->associationComp->add($associationComp);
-            $associationComp->setCreator($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAssociationComp(AssociationCompo $associationComp): self
-    {
-        if ($this->associationComp->removeElement($associationComp)) {
-            // set the owning side to null (unless already changed)
-            if ($associationComp->getCreator() === $this) {
-                $associationComp->setCreator(null);
-            }
-        }
 
         return $this;
     }

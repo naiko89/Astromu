@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AssociationContaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AssociationContaRepository::class)]
@@ -24,6 +26,14 @@ class AssociationConta
 
     #[ORM\ManyToOne(inversedBy: 'associationCont')]
     private ?Container $container = null;
+
+    #[ORM\OneToMany(mappedBy: 'associationConta', targetEntity: AssociationCompo::class)]
+    private Collection $assoChain;
+
+    public function __construct()
+    {
+        $this->assoChain = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +84,36 @@ class AssociationConta
     public function setContainer(?Container $container): self
     {
         $this->container = $container;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AssociationCompo>
+     */
+    public function getAssoChain(): Collection
+    {
+        return $this->assoChain;
+    }
+
+    public function addAssoChain(AssociationCompo $assoChain): self
+    {
+        if (!$this->assoChain->contains($assoChain)) {
+            $this->assoChain->add($assoChain);
+            $assoChain->setAssociationConta($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssoChain(AssociationCompo $assoChain): self
+    {
+        if ($this->assoChain->removeElement($assoChain)) {
+            // set the owning side to null (unless already changed)
+            if ($assoChain->getAssociationConta() === $this) {
+                $assoChain->setAssociationConta(null);
+            }
+        }
 
         return $this;
     }
