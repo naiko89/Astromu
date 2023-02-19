@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\AssociationCompo;
 use App\Entity\AssociationConta;
 use App\Entity\BuildingGroupCreator;
 use App\Entity\Group;
+use App\Repository\AssociationCompoRepository;
 use App\Repository\AssociationContaRepository;
+use App\Repository\CompositionRepository;
+use App\Repository\ContainerRepository;
 use App\Repository\CreatorRepository;
 use App\Repository\GroupRepository;
 use App\Repository\BuildingGroupCreatorRepository;
@@ -23,8 +27,10 @@ class GroupController extends AbstractController
      */
     public function index(Request $request, GroupRepository $groupRepository,
                           SerializationService $serializationService,
-                          BuildingGroupCreatorRepository $buildingGroupCreatorRepository,
-                          AssociationContaRepository $associationContaRepository): JsonResponse
+                          AssociationContaRepository $associationContaRepository,
+                          AssociationCompoRepository $associationCompoRepository,
+                          ContainerRepository $containerRepository,
+                          CompositionRepository $compositionRepository): JsonResponse
     {
 
         $method = $request->getMethod();
@@ -33,7 +39,7 @@ class GroupController extends AbstractController
             case 'GET':
                 if($text === null || $text === ''){
                     return new JsonResponse($serializationService->serialize(
-                        $groupRepository->findBy([],['name' => 'ASC'],30),'groupList:read')
+                        $groupRepository->findBy(['isAssociated' => true],['name' => 'ASC'],30),'groupList:read')
                     );
                 }
                 else{
@@ -50,17 +56,39 @@ class GroupController extends AbstractController
                 dump('sei nel PUT modifica una');
                 // Aggiorna una composizione esistente
                 break;
-            case 'DELETE':
+            case 'DELETE': //--->cascade elimination with research for dissociated container and composition
                 $idGroup = $request->query->get('id');
-                $buildingGroupCreators = $buildingGroupCreatorRepository->findBy(['team' => $idGroup]);
-                $associationContainers = $associationContaRepository->findBy(['team' => $idGroup]);
-                foreach ($buildingGroupCreators as $buildingGroupCreator) {
-                    $buildingGroupCreatorRepository->remove($buildingGroupCreator, true); //->
+                $groupEntity=$groupRepository->find($idGroup)->setIsAssociated(false);
+                $groupRepository->save($groupEntity, true);
+                $associationsContainersGroup = $associationContaRepository->findBy(['team' => $idGroup]); //-->take the container associated width the team
+                $assoContModified = [];
+                $assoCompModified = [];//dump('entità group');dump($groupEntity);dump('associazioni container del gruppo');dump($associationsContainers);
+
+                foreach ($associationsContainersGroup as $associationsContainerGroup){//-->remove all group's associations (containers and compositions)
+                    $assoContModified[] = $associationsContainerGroup;
+                    $associationsCompositionsContainerGroup = $associationsContainerGroup->getAssoChain()->getValues();
+                    foreach ($associationsCompositionsContainerGroup as $associationCompositionContainerGroup){
+                        $assoCompModified[] = $associationCompositionContainerGroup; //dump($associationComposition);
+                        $associationCompoRepository->remove($associationCompositionContainerGroup, true);
+                    }
+                    $associationContaRepository->remove($associationsContainerGroup, true);
                 }
-                foreach ($associationContainers as $associationContainer){
-                    $associationContaRepository->remove($associationContainer, true);
+
+                foreach ($assoContModified as $conModified) {//-->check if the container is still associated
+                    $containerAssociations = $associationContaRepository->findBy(['container' => $conModified->getContainer()->getId()]);
+                    if (count($containerAssociations) === 0) {
+                        $containerDisass = $containerRepository->find($conModified->getContainer()->getId())->setIsAssociated(false);
+                        $containerRepository->save($containerDisass, true);
+                    }
                 }
-                $groupRepository->remove($groupRepository->find($idGroup), true);
+
+                foreach ($assoCompModified as $comModified) {//-->check if the composition is still associated
+                    $compositionAssociations = $associationCompoRepository->findBy(['composition'=>$comModified->getComposition()->getId()]);
+                    if(count($compositionAssociations) === 0){
+                        $compositionDisass = $compositionRepository->find($comModified->getComposition()->getId())->setIsAssociated(false);
+                        $compositionRepository->save($compositionDisass, true);
+                    }
+                }
                 return new JsonResponse([true]);
         }
         return new JsonResponse (['error']);
@@ -85,7 +113,7 @@ class GroupController extends AbstractController
                 return new JsonResponse($serializationService->serialize($creatorRepository->findByName($text),'researchFormCreatorGroup:read'));
             case 'POST':
                 $group = new Group();
-                $group->setName($request->query->get('group'));
+                $group->setName($request->query->get('group'))->setIsAssociated(true);
                 $groupRepository->save($group, true);
                 foreach (json_decode($request->query->get('selectedMembers')) as $item){
                     $creatorGroup = new BuildingGroupCreator();

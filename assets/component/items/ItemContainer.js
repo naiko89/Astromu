@@ -4,13 +4,11 @@ const ItemContainer = (props) => {
 
     const handleDelete = async () => {
 
-        alert(' Elimini sia il Contenitore e le Creazioni Associate ')
-
         const response = await fetch(`/api/container?id=${props.value.id}`, {
             method: 'DELETE',
         });
         if (response.ok) {
-            alert('Elemento eliminato con successo');
+            console.log('Elemento eliminato con successo');
             props.childRend('')
         } else {
             console.log('Errore durante l\'eliminazione dell\'elemento');

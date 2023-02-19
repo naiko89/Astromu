@@ -46,7 +46,11 @@ class CompositionRepository extends ServiceEntityRepository
             ->select('o')
             ->from(Composition::class, 'o')
             ->where('o.name LIKE :name')
-            ->setParameter('name', '%'.$value.'%')
+            ->andWhere('o.isAssociated = :isAssociated')
+            ->setParameters(array(
+                'name' => '%'.$value.'%',
+                'isAssociated' => true,
+            ))
             ->orderBy('o.name', 'ASC')
             ->setMaxResults(30)
             ->getQuery()

@@ -7,7 +7,7 @@ const ItemComposition = (props) => {
             method: 'DELETE',
         });
         if (response.ok) {
-            alert('Elemento eliminato con successo');
+            console.log('Elemento eliminato con successo');
             props.childRend('')
         } else {
             console.log('Errore durante l\'eliminazione dell\'elemento');

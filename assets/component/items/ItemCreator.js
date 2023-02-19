@@ -4,13 +4,11 @@ const ItemContainer = (props) => {
 
     const handleDelete = async () => {
 
-        alert(' Elimino le associazioni ai Container, alle Composition e ai Group Relativi ai Creator')
-
         const response = await fetch(`/api/creator?id=${props.value.id}`, {
             method: 'DELETE',
         });
         if (response.ok) {
-            alert('Elemento eliminato con successo');
+            console.log('Elemento eliminato con successo');
             props.childRend('')
         } else {
             console.log('Errore durante l\'eliminazione dell\'elemento');

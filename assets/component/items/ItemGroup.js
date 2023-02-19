@@ -4,13 +4,13 @@ const ItemContainer = (props) => {
 
     const handleDelete = async () => {
 
-        alert('Elimino il Group e le Associazioni ai Container, Composition e Alle Associazioni Con i Creator')
+       // alert('Elimino il Group e le Associazioni ai Container, Composition e Alle Associazioni Con i Creator')
 
         const response = await fetch(`/api/group?id=${props.value.id}`, {
             method: 'DELETE',
         });
         if (response.ok) {
-            alert('Elemento eliminato con successo');
+           // alert('Elemento eliminato con successo');
             props.childRend('')
         } else {
             console.log('Errore durante l\'eliminazione dell\'elemento');

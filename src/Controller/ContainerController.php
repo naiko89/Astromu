@@ -4,16 +4,17 @@ namespace App\Controller;
 
 use App\Entity\AssociationConta;
 use App\Entity\Container;
+use App\Repository\AssociationCompoRepository;
 use App\Repository\CompositionRepository;
 use App\Repository\ContainerRepository;
 use App\Repository\CreatorRepository;
 use App\Repository\GroupRepository;
 use App\Repository\AssociationContaRepository;
 use App\Service\SerializationService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -23,21 +24,20 @@ class ContainerController extends AbstractController
     /**
      * @Route("/api/container", name="container_index", methods={"GET", "POST", "PUT", "DELETE"})
      */
-    public function index(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        ,AssociationContaRepository $associationContaRepository, SerializationService $serializationService): JsonResponse
+    public function index(Request    $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+        , AssociationContaRepository $associationContaRepository, AssociationCompoRepository $associationCompoRepository, SerializationService $serializationService, EntityManagerInterface $entityManager): JsonResponse
     {
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
-                $text=$request->query->get('text');
-                if($text === null || $text === ''){
+                $text = $request->query->get('text');
+                if ($text === null || $text === '') {
                     return new JsonResponse($serializationService->serialize(
-                        $containerRepository->findBy([],['name' => 'ASC'],30),'containerList:read')
+                        $containerRepository->findBy(['isAssociated' => true], ['name' => 'ASC'], 30), 'containerList:read')
                     );
-                }
-                else{
+                } else {
                     return new JsonResponse($serializationService->serialize(
-                        $containerRepository->findByName($text.'%'),'containerList:read')
+                        $containerRepository->findByName($text . '%'), 'containerList:read')
                     );
                 }
             case 'POST':
@@ -49,16 +49,33 @@ class ContainerController extends AbstractController
                 // Aggiorna una composizione esistente
                 break;
             case 'DELETE':
-                foreach ($associationContaRepository->findBy(['container' => $request->query->get('id')]) as $itemClass) {
-                    $associationContaRepository->remove($itemClass); // elimina l'oggetto corrente
+                $associationsContainerCreators = $associationContaRepository->findBy(['container' => $request->query->get('id')]);
+                $containerEntity = $containerRepository->find($request->query->get('id'))->setIsAssociated(false);
+                $containerRepository->save($containerEntity, true);
+                $assoCompModified = [];//dump($associationsContainerCreators);dump(count($associationsContainerCreators).'<---');
+                foreach ($associationsContainerCreators as $associationsContainerCreator) { //-->remove container's associations
+                    //--> composition in relationship with association container
+                    $associationsCompositionsContainer  = $associationCompoRepository->findBy(['associationConta' =>$associationsContainerCreator->getId()]);// dump('!!!!!!!'); dump($associationsCompositionsContainer);
+                      foreach ($associationsCompositionsContainer as $associationsCompositionContainer){ //-->take trace of modified compositions for check if be able to disassociate
+                          $assoCompModified[] = $associationsCompositionContainer->getComposition()->getId();
+                      }
+                    $associationContaRepository->remove($associationsContainerCreator, true);
                 }
-                $containerRepository->remove($containerRepository->find($request->query->get('id')), true);
+                foreach (array_unique($assoCompModified) as $compositionModified){ //-->check the modified compositions
+                    //dump('id composizione'. $compositionModified);
+                    $compositionAssociations = $associationCompoRepository->findby(['composition'=> $compositionModified]);
+                      if(count($compositionAssociations) === 0){ //-->condition for disassociation
+                        $compositionDisass=$compositionRepository->find($compositionModified)->setIsAssociated(false);
+                        $compositionRepository->save($compositionDisass, true);
+                      }
+                }
                 return new JsonResponse([true]);
         }
-        return new JsonResponse (['errore']);
+                return new JsonResponse (['errore']);
 
 
     }
+
 
     /**
      * @Route("/api/container/form", name="container_form", methods={"GET", "POST", "PUT", "DELETE"})
@@ -79,7 +96,7 @@ class ContainerController extends AbstractController
                 case 'POST':
                     $container = new Container();
                     $containerName = $request->query->get('container');
-                    $container->setName($containerName);
+                    $container->setName($containerName)->setIsAssociated(true);
                     $authorList = json_decode($request->query->get('selectedAuthors'));
                     dump($authorList);
                     $containerRepository->save($container, true);
@@ -109,8 +126,6 @@ class ContainerController extends AbstractController
                     break;
             }
             return new JsonResponse (['errore']);
-
-
     }
 
 

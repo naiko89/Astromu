@@ -29,9 +29,6 @@ class Composition
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $base_text = null;
 
-    #[ORM\ManyToOne(inversedBy: 'compositions')]
-    private ?Group $team = null;
-
     #[ORM\OneToMany(mappedBy: 'composition', targetEntity: AssociationCompo::class, orphanRemoval: true)]
     private Collection $assocaitionComp;
 
@@ -89,18 +86,6 @@ class Composition
     public function setBaseText(?string $base_text): self
     {
         $this->base_text = $base_text;
-
-        return $this;
-    }
-
-    public function getTeam(): ?Group
-    {
-        return $this->team;
-    }
-
-    public function setTeam(?Group $team): self
-    {
-        $this->team = $team;
 
         return $this;
     }

@@ -137,13 +137,13 @@ class FormGroupFastAdd extends React.Component{
             <>
                 <Modal show={display} onHide={this.handleClose} size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>Aggiungi Creatore</Modal.Title>
+                        <Modal.Title>Aggiungi Gruppo</Modal.Title>
                     </Modal.Header>
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
 
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome" onChange={this.onChangeGroup} value={this.state.form.Group}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome Gruppo" onChange={this.onChangeGroup} value={this.state.form.Group}/>
                         </Form.Group>
 
                         <Form.Group controlId="formValTwo" className={'mb-2'}>

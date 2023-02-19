@@ -27,7 +27,7 @@ class AssociationConta
     #[ORM\ManyToOne(inversedBy: 'associationCont')]
     private ?Container $container = null;
 
-    #[ORM\OneToMany(mappedBy: 'associationConta', targetEntity: AssociationCompo::class)]
+    #[ORM\OneToMany(mappedBy: 'associationConta', targetEntity: AssociationCompo::class, cascade: ["remove"])]
     private Collection $assoChain;
 
     public function __construct()

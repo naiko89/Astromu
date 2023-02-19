@@ -43,6 +43,9 @@ class Container
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prize_temp = null;
 
+    #[ORM\Column]
+    private ?bool $isAssociated = null;
+
     public function __construct()
     {}
 
@@ -144,6 +147,18 @@ class Container
     public function setPrizeTemp(?string $prize_temp): self
     {
         $this->prize_temp = $prize_temp;
+
+        return $this;
+    }
+
+    public function isIsAssociated(): ?bool
+    {
+        return $this->isAssociated;
+    }
+
+    public function setIsAssociated(bool $isAssociated): self
+    {
+        $this->isAssociated = $isAssociated;
 
         return $this;
     }

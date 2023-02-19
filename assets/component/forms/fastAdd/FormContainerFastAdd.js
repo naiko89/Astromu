@@ -157,13 +157,13 @@ class FormContainerFastAdd extends React.Component{
             <>
                 <Modal show={display} onHide={this.handleClose} size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>Aggiungi Composizione</Modal.Title>
+                        <Modal.Title>Aggiungi Contenitore</Modal.Title>
                     </Modal.Header>
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
 
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome" onChange={this.onChangeContainer} value={this.state.form.container}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome Contenitore" onChange={this.onChangeContainer} value={this.state.form.container}/>
                         </Form.Group>
 
                         <Form.Group controlId="formValTwo" className={'mb-2'}>

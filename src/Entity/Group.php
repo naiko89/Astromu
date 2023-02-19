@@ -47,9 +47,6 @@ class Group
     #[ORM\ManyToOne(inversedBy: 'groupsSubNation')]
     private ?SubNation $subNation = null;
 
-    #[ORM\OneToMany(mappedBy: 'team', targetEntity: Composition::class)]
-    private Collection $compositions;
-
     #[ORM\OneToMany(mappedBy: 'team', targetEntity: AssociationCompo::class)]
     private Collection $associationComp;
 
@@ -58,6 +55,9 @@ class Group
 
     #[ORM\OneToMany(mappedBy: 'team', targetEntity: BuildingGroupCreator::class)]
     private Collection $associationCreator;
+
+    #[ORM\Column]
+    private ?bool $isAssociated = null;
 
     public function __construct()
     {
@@ -199,36 +199,6 @@ class Group
     }
 
     /**
-     * @return Collection<int, Composition>
-     */
-    public function getCompositions(): Collection
-    {
-        return $this->compositions;
-    }
-
-    public function addComposition(Composition $composition): self
-    {
-        if (!$this->compositions->contains($composition)) {
-            $this->compositions->add($composition);
-            $composition->setTeam($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComposition(Composition $composition): self
-    {
-        if ($this->compositions->removeElement($composition)) {
-            // set the owning side to null (unless already changed)
-            if ($composition->getTeam() === $this) {
-                $composition->setTeam(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, AssociationCompo>
      */
     public function getAssociationComp(): Collection
@@ -314,6 +284,18 @@ class Group
                 $associationCreator->setTeam(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsAssociated(): ?bool
+    {
+        return $this->isAssociated;
+    }
+
+    public function setIsAssociated(bool $isAssociated): self
+    {
+        $this->isAssociated = $isAssociated;
 
         return $this;
     }

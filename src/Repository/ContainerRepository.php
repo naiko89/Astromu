@@ -47,14 +47,25 @@ class ContainerRepository extends ServiceEntityRepository
             ->select('o')
             ->from(Container::class, 'o')
             ->where('o.name LIKE :name')
-            ->setParameter('name', '%'.$value.'%')
+            ->andWhere('o.isAssociated = :isAssociated')
+            ->setParameters(array(
+                'name' => '%'.$value.'%',
+                'isAssociated' => true,
+            ))
             ->orderBy('o.name', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
 
     }
+/*
+->select('o')
+     ->from(Composition::class, 'o')
+     ->where('o.name LIKE :name')
+     ->andWhere('o.prova = :prova')
 
+
+*/
 
 //    /**
 //     * @return Container[] Returns an array of Container objects

@@ -29,7 +29,7 @@ class CompositionsController extends AbstractController
      */
     public function index(Request $request,
                           CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository,
-                          SerializationService $serializationService): JsonResponse
+                          SerializationService $serializationService, AssociationCompoRepository $associationCompoRepository): JsonResponse
     {
         $method = $request->getMethod();
 
@@ -39,10 +39,9 @@ class CompositionsController extends AbstractController
         switch ($method) {
             case 'GET':
                 $text=$request->query->get('text');
-                dump($text);
                 if($text === null || $text === ''){
                     return new JsonResponse($serializationService->serialize(
-                        $compositionRepository->findBy([],['name' => 'ASC'],30),'compositionsList:read')
+                        $compositionRepository->findBy(['isAssociated'=>true],['name' => 'ASC'],30),'compositionsList:read')
                     );
                 }
                 else{
@@ -67,7 +66,13 @@ class CompositionsController extends AbstractController
                 // Aggiorna una composizione esistente
                 break;
             case 'DELETE':
-                $compositionRepository->remove($compositionRepository->findOneBy(['id' => $request->query->get('id')]), true);
+                $composition = $compositionRepository->findOneBy(['id' => $request->query->get('id')]);
+                $composition->setIsAssociated(false);
+                $compositionRepository->save($composition, true);
+                $associationsCompositionArray=$associationCompoRepository->findBy(['composition'=> $composition->getId()]);
+                foreach ($associationsCompositionArray as $associationComposition){
+                    $associationCompoRepository->remove($associationComposition, true);
+                }
                 return new JsonResponse([true]);
                 break;
         }
@@ -88,21 +93,17 @@ class CompositionsController extends AbstractController
                 dump($containerRepository->findByName($text));
                 return new JsonResponse($serializationService->serialize($containerRepository->findByName($text),'researchFormCompContainer:read'));
                 break;
-            case 'POST':
-                //-->questa query adrà ad associare la composition ai container ed ai rispettivi creator...praticamete setto i creatori della composition
+            case 'POST'://-->questa query adrà ad associare la composition ai container ed ai rispettivi creator...praticamete setto i creatori della composition nelle associazioni
                 $composition = new Composition();
-                $composition->setName($request->query->get('composition'));
-                dump($request->query->get('composition').'----'. $request->query->get('containerId'));
+                $composition->setName($request->query->get('composition'))->setIsAssociated(true); //dump($request->query->get('composition').'----'. $request->query->get('containerId'));
                 $compositionRepository->save($composition);
                 $assoContainer = $associationContaRepository->findBy(['container' => $request->query->get('containerId')]);
-
                 foreach ($assoContainer as $itemEntity) {
                     $assoChain = new AssociationCompo();
                     $assoChain->setAssociationConta($itemEntity)->setCreation(true)->setComposition($composition);
                     $associationCompoRepository->save($assoChain, true);
                 }
                 return new JsonResponse([true]);
-                dump('sei in post aggiungi una o più');
                 break;
             case 'PUT':
                 dump('sei nel PUT modifica una');

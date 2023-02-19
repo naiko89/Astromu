@@ -59,6 +59,9 @@ class Creator
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: BuildingGroupCreator::class)]
     private Collection $associationGroup;
 
+    #[ORM\Column]
+    private ?bool $isAssociated = null;
+
     public function __construct()
     {
         $this->associationCont = new ArrayCollection();
@@ -247,6 +250,18 @@ class Creator
                 $associationGroup->setCreator(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsAssociated(): ?bool
+    {
+        return $this->isAssociated;
+    }
+
+    public function setIsAssociated(bool $isAssociated): self
+    {
+        $this->isAssociated = $isAssociated;
 
         return $this;
     }

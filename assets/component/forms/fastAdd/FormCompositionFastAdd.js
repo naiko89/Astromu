@@ -31,10 +31,7 @@ class FormCompositionFastAdd extends React.Component{
     handleSubmit(event) {
         event.preventDefault()
         let uriFragment = queryString.stringify(this.state.form)
-        alert(uriFragment)
-        if(this.state.form.composition && this.state.form.containerId)
-        {
-
+        if(this.state.form.composition && this.state.form.containerId) {
             fetch(`/api/compositions/form?${uriFragment}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
@@ -119,7 +116,7 @@ class FormCompositionFastAdd extends React.Component{
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome" onChange={this.onChangeComposition} value={this.state.form.composition}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome Composizione" onChange={this.onChangeComposition} value={this.state.form.composition}/>
                         </Form.Group>
                         <Form.Group controlId="formValTwo" className={'mb-2'}>
                             <Form.Control type="text" list="containerOptions" autoComplete="off" placeholder="Aggiungi Container" onChange={(e) => this.onChangeContainer(e)} value={this.state.temp.container}/>

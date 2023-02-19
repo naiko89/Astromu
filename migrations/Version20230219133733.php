@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230214181908 extends AbstractMigration
+final class Version20230219133733 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,14 @@ final class Version20230214181908 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE composition CHANGE is_associated is_associated TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE creator ADD is_associated TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE `group` ADD is_associated TINYINT(1) NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE composition CHANGE is_associated is_associated TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE creator DROP is_associated');
+        $this->addSql('ALTER TABLE `group` DROP is_associated');
     }
 }

@@ -39,6 +39,16 @@ class AssociationContaRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByIfAssociationUniqueGroup($container)
+    {
+        //$qb = $this->createQueryBuilder('m')->where();
+
+        //return $qb->getResult();
+
+        //return $qb->getResult();
+    }
+
+
 //    /**
 //     * @return AssociationConta[] Returns an array of AssociationConta objects
 //     */

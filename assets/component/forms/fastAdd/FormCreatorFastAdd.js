@@ -75,7 +75,7 @@ class FormCreatorFastAdd extends React.Component{
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome" onChange={this.onChangeCreator} value={this.state.form.creator}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome Creatore" onChange={this.onChangeCreator} value={this.state.form.creator}/>
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
