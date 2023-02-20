@@ -55,22 +55,21 @@ class CreatorController extends AbstractController
                     $associationsCreatorContainers = $associationContaRepository->findBy(['creator'=>$request->query->get('id')]); ///--->dovrai anche cercare di togliere i container che sono legati a gruppi che tolti i creatori si dissociano
                     $creatorEntity = $creatorRepository->find($request->query->get('id'))->setIsAssociated(false);
                     $creatorRepository->save($creatorEntity, true);
-                    $assoGroupsModified = [];
-                    $assoContModified = [];
-                    $assoCompModified = [];
+                    $entitiesModified = ['groups'=>[],'containers'=>[],'compositions'=>[]];
+
 
                     foreach ($associationsCreatorGroups as $associationCreatorGroup){
-                        $assoGroupsModified[] = $associationCreatorGroup->getTeam();
+                        $entitiesModified['groups'][] = $associationCreatorGroup->getTeam();
                         //$associatonGroup = $buildingGroupCreatorRepository->findBy(['creator'=>$associationCreatorGroup->getCreator()->getId()]);
                         $buildingGroupCreatorRepository->remove($associationCreatorGroup, true);
                     }
 
                     foreach ($associationsCreatorContainers as $associationCreatorContainer){//-->directly associate to creator
-                        $assoContModified[] = $associationCreatorContainer;
+                        $entitiesModified['containers'][] = $associationCreatorContainer;
                         $associationsCompositionsContainer  = $associationCompoRepository->findBy(['associationConta' =>$associationCreatorContainer->getId()]);
 
                         foreach ($associationsCompositionsContainer as $associationCompositionContainer){//dump('queste devono essere una e una sola');dump($associationCompositionContainer);
-                            $assoCompModified[] = $associationCompositionContainer;
+                            $entitiesModified['compositions'][] = $associationCompositionContainer;
                             $associationCompoRepository->remove($associationCompositionContainer, true); //
                         }
                         $associationContaRepository->remove($associationCreatorContainer,true);
@@ -78,17 +77,17 @@ class CreatorController extends AbstractController
 
                     //-->we need a share service for the controllers:D
 
-                    foreach ($assoGroupsModified as $assoGroupModified){ //-->indirectly for a group could be disassociated because there aren't other associations with creator  cascade from group--->container--->composition
+                    foreach ($entitiesModified['groups'] as $assoGroupModified){ //-->indirectly for a group could be disassociated because there aren't other associations with creator  cascade from group--->container--->composition
                         if(count($buildingGroupCreatorRepository->findBy(["team"=>$assoGroupModified]))===0){
                             $groupDisasEntity=$groupRepository->find($assoGroupModified)->setIsAssociated(false);
                             $groupRepository->save($groupDisasEntity, true);
                             //-->it's like group delete in group controller
                             $associationsContainersGroup = $associationContaRepository->findBy(['team' => $groupDisasEntity->getId()]);
                             foreach ($associationsContainersGroup as $associationsContainerGroup){//-->remove all group's associations (containers and compositions)
-                                $assoContModified[] = $associationsContainerGroup;
+                                $entitiesModified['containers'][] = $associationsContainerGroup;
                                 $associationsCompositionsContainerGroup = $associationsContainerGroup->getAssoChain()->getValues();
                                 foreach ($associationsCompositionsContainerGroup as $associationCompositionContainerGroup){
-                                    $assoCompModified[] = $associationCompositionContainerGroup; //dump($associationComposition);
+                                    $entitiesModified['compositions'][] = $associationCompositionContainerGroup; //dump($associationComposition);
                                     $associationCompoRepository->remove($associationCompositionContainerGroup, true); //
                                 }
                                 $associationContaRepository->remove($associationsContainerGroup, true); //
@@ -97,8 +96,7 @@ class CreatorController extends AbstractController
                     }
 
 
-
-                    foreach ($assoContModified as $conModified) {//-->check if the container is still associated
+                    foreach ($entitiesModified['containers'] as $conModified) {//-->check if the container is still associated
                         $containerAssociations = $associationContaRepository->findBy(['container' => $conModified->getContainer()->getId()]);
                         if (count($containerAssociations) === 0) {
                             $containerDisass = $containerRepository->find($conModified->getContainer()->getId())->setIsAssociated(false);
@@ -106,7 +104,7 @@ class CreatorController extends AbstractController
                         }
                     }
 
-                    foreach ($assoCompModified as $comModified) {//-->check if the composition is still associated
+                    foreach ($entitiesModified['compositions'] as $comModified) {//-->check if the composition is still associated
                         $compositionAssociations = $associationCompoRepository->findBy(['composition'=>$comModified->getComposition()->getId()]);
                         if(count($compositionAssociations) === 0){
                             $compositionDisass = $compositionRepository->find($comModified->getComposition()->getId())->setIsAssociated(false);
@@ -114,9 +112,8 @@ class CreatorController extends AbstractController
                         }
                     }
 
-                    //dump('gli id da verificare sono:');dump($assoGroupModified);dump('--------');dump($assoContModified);dump('--------');dump($assoCompModified);
+                    //dump('the  ids to verify are:');dump($assoGroupModified);dump('--------');dump($assoContModified);dump('--------');dump($assoCompModified);
                     return new JsonResponse([true]);
-                    break;
             }
             return new JsonResponse (['error']);
 

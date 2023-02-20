@@ -62,20 +62,20 @@ class ListCompositions extends React.Component {
 
         return(
             <>
-            <nav className="navbar navbar-light bg-light justify-content-between border-bottom">
-                <a className="navbar-brand"></a>
-                <div className={'form-inline my-2 my-lg-0 me-2 d-flex'}>
-                    <button id='toggle-modal-composition' onClick={()=>this.toggleModalComposition(true)} className="btn btn-outline-success btn-sm me-1" style={{fontSize: '14px'}}>+</button>
-                    <FormResearch onChangeSup={this.onChange} value={value}></FormResearch>
+                <nav className="navbar navbar-light bg-light justify-content-between border-bottom">
+                    <a className="navbar-brand"></a>
+                    <div className={'form-inline my-2 my-lg-0 me-2 d-flex'}>
+                        <button id='toggle-modal-composition' onClick={()=>this.toggleModalComposition(true)} className="btn btn-outline-success btn-sm me-1" style={{fontSize: '14px'}}>+</button>
+                        <FormResearch onChangeSup={this.onChange} value={value}></FormResearch>
+                    </div>
+                </nav>
+
+                <div className={'container'}>
+                    <ul className={'list-unstyled d-flex flex-wrap row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 pt-2'}>
+                        {listItems}
+                    </ul>
                 </div>
 
-            </nav>
-            <div className={'container'}>
-
-                <ul className={'list-unstyled d-flex flex-wrap row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 pt-2'}>
-                    {listItems}
-                </ul>
-            </div>
                 <FormCompositionFastAdd displayHandle={this.toggleModalComposition} display={displayComposition} childRend={this.handleChildRender}></FormCompositionFastAdd>
             </>
         )

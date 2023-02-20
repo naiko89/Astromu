@@ -1,6 +1,7 @@
 import React from 'react';
 //import ColumnCard from "../editor/EditorComposition";
 import ListContainers from "../component/lists/ListContainers"
+import EditorContainer from "../editor/EditorContainer";
 
 class ShowContainers extends  React.Component {
     constructor(props) {
@@ -8,7 +9,6 @@ class ShowContainers extends  React.Component {
         const user = props.nomeUser
         this.state = {
             compositionEdit: { trigger:false },
-            // header: { links: [ { name:'#home', ID:0 }, { name:'#profile', ID:1 }, { name:'#messages', ID:2 } ] },
             layout: { component:'FirstViewer' },
             container: [ ],
             handleValues: { trigger:false, textarea:'', id:'', select:false },
@@ -36,7 +36,7 @@ class ShowContainers extends  React.Component {
     render() {
 
         let View = this.state.viewMode.show ?
-            <div>editor del contenitore</div> :
+            <EditorContainer containerId={this.state.viewMode.container.id}>editor del contenitore</EditorContainer> :
             <ListContainers showEditCont={this.handleShowContainerEdit}  id={this.state.viewMode.container.id}></ListContainers>;
 
         return (

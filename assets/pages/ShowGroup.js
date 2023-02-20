@@ -1,6 +1,6 @@
 import React from 'react';
-// import ColumnCard from "../editor/EditorComposition";
 import ListGroup from "../component/lists/ListGroup"
+import EditorGroup from "../editor/EditorGroup";
 
 class ShowGroup extends  React.Component {
     constructor(props) {
@@ -8,8 +8,6 @@ class ShowGroup extends  React.Component {
         const user = props.nomeUser
         this.state = {
             creatorEdit: { trigger:false },
-            // header: { links: [ { name:'#home', ID:0 }, { name:'#profile', ID:1 }, { name:'#messages', ID:2 } ] },
-            // layout: { component:'FirstViewer' },
             group: [ ],
             handleValues: { trigger:false, textarea:'', id:'', select:false },
             viewMode: {show:false, group: {id:null}}
@@ -26,34 +24,23 @@ class ShowGroup extends  React.Component {
         this.setState(tempState)
     }
 
-    handleHideGroupEdit(){
+    handleHideGroupEdit(id){
         let tempState = this.state
         tempState.viewMode.show = false
         this.setState(tempState)
     }
 
-
     render() {
         let View = this.state.viewMode.show ?
-             <div>editor del creator</div> :
-             <ListGroup showEditComp={this.handleShowGroupEdit}  id={this.state.viewMode.group.id}></ListGroup>;
+             <EditorGroup groupId={this.state.viewMode.group.id}>editor del creator</EditorGroup> :
+             <ListGroup showEditGroup={this.handleShowGroupEdit}  id={this.state.viewMode.group.id}></ListGroup>;
 
         return (
             <div className="container-fluid m-0 p-0" style={{height: '93vh'}}>
                 {View}
             </div>
-
-
         );
     }
 }
 
 export default ShowGroup;
-
-
-//<ul className="nav" id="myTab">
-//{linksCardsHeader}
-//</ul>
-
-
-// <BoxedColumMenu cardTitle='Titolo ShowCompositions Column'> </BoxedColumMenu>
