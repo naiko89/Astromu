@@ -36,13 +36,10 @@ class Group
     private ?string $labels = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $npublished = null;
+    private ?int $nPublished = null;
 
     #[ORM\ManyToOne(inversedBy: 'groups')]
     private ?Nation $nation = null;
-
-    #[ORM\OneToMany(mappedBy: 'team', targetEntity: Container::class)]
-    private Collection $containers;
 
     #[ORM\ManyToOne(inversedBy: 'groupsSubNation')]
     private ?SubNation $subNation = null;
@@ -59,9 +56,17 @@ class Group
     #[ORM\Column]
     private ?bool $isAssociated = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $nCollaborated = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
+
     public function __construct()
     {
-        $this->containers = new ArrayCollection();
         $this->compositions = new ArrayCollection();
         $this->associationCont = new ArrayCollection();
         $this->associationCreator = new ArrayCollection();
@@ -132,14 +137,14 @@ class Group
         return $this;
     }
 
-    public function getNpublished(): ?int
+    public function getNPublished(): ?int
     {
-        return $this->npublished;
+        return $this->nPublished;
     }
 
-    public function setNpublished(?int $npublished): self
+    public function setNPublished(?int $nPublished): self
     {
-        $this->npublished = $npublished;
+        $this->nPublished = $nPublished;
 
         return $this;
     }
@@ -152,36 +157,6 @@ class Group
     public function setNation(?Nation $nation): self
     {
         $this->nation = $nation;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Container>
-     */
-    public function getContainers(): Collection
-    {
-        return $this->containers;
-    }
-
-    public function addContainer(Container $container): self
-    {
-        if (!$this->containers->contains($container)) {
-            $this->containers->add($container);
-            $container->setTeam($this);
-        }
-
-        return $this;
-    }
-
-    public function removeContainer(Container $container): self
-    {
-        if ($this->containers->removeElement($container)) {
-            // set the owning side to null (unless already changed)
-            if ($container->getTeam() === $this) {
-                $container->setTeam(null);
-            }
-        }
 
         return $this;
     }
@@ -263,7 +238,7 @@ class Group
      */
     public function getAssociationCreator(): Collection
     {
-        return $this->associatonCreator;
+        return $this->associationCreator;
     }
 
     public function addAssociationCreator(BuildingGroupCreator $associationCreator): self
@@ -296,6 +271,42 @@ class Group
     public function setIsAssociated(bool $isAssociated): self
     {
         $this->isAssociated = $isAssociated;
+
+        return $this;
+    }
+
+    public function getNCollaborated(): ?int
+    {
+        return $this->nCollaborated;
+    }
+
+    public function setNCollaborated(?int $nCollaborated): self
+    {
+        $this->nCollaborated = $nCollaborated;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
 
         return $this;
     }

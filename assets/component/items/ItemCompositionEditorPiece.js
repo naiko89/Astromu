@@ -47,7 +47,7 @@ class ItemCompositionEditorPiece extends React.Component{
                                             </ul>
                                         </div>
 
-                                        <div className="card-body">
+                                        <div className="card-body" style={{whiteSpace: "pre-wrap"}}>
                                             <p className="card-text">{value.textarea}</p>
                                         </div>
 

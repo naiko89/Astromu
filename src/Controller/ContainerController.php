@@ -11,12 +11,12 @@ use App\Repository\CreatorRepository;
 use App\Repository\GroupRepository;
 use App\Repository\AssociationContaRepository;
 use App\Service\SerializationService;
+use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 
 class ContainerController extends AbstractController
@@ -130,5 +130,96 @@ class ContainerController extends AbstractController
 
 
 
+    /**
+     * @Route("/api/container/editor", name="container_editor", methods={"GET", "POST", "PUT", "DELETE"})
+     */
+    public function researchForEditor(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+        ,SerializationService $serializationService,AssociationCompoRepository $associationCompoRepository, AssociationContaRepository $associationContaRepository ,GroupRepository $groupRepository , SerializerInterface $serializerInterface): JsonResponse
+    {
+        $method = $request->getMethod();
+        switch ($method) {
+            case 'GET':
+                $id = $request->query->get('id');
+                $containerEntity = $containerRepository->find($id);
+                $optionBase = [
+                    'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                },
+                    'attributes' => [
+                        'id',
+                        'name',
+                        'datePublish',
+                        'compNumber',
+                        'description',
+                        'genre',
+                        'label',
+                        'prize_temp',
+                        'photo']
+                ];
+                $optionDeep = [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    },
+                    'attributes' => [
+                        'id',
+                        'name',
+                        'associationCont' => [
+                            'id',
+                            'team' =>[
+                                'id',
+                                'name'
+                            ],
+                            'creator' => [
+                              'id',
+                              'name'
+                            ],
+                            'assoChain'=>[
+                              'composition'=>[
+                                  'id',
+                                  'name'
+                              ]
+                            ]
+                        ]
+                    ]
+                ];
 
+
+                foreach (json_decode($serializerInterface->serialize($containerEntity, 'json', $optionDeep))->associationCont as $item){
+
+
+                    if(!isset($data['container'])){
+                        $data['container'] = json_decode($serializerInterface->serialize($containerEntity,'json', $optionBase));
+                    }
+
+                    if(!isset($data['compositions'])){
+                        $data['compositions'] = $item->assoChain;
+                    }
+
+                    if($item->team !== null){
+                        $data['makers'][] = ['id'=>$item->team->id ,'name'=> $item->team->name,'type' => 'group'];
+                    }
+                    else if($item->creator !== null){
+                        $data['makers'][] = ['id'=>$item->creator->id ,'name'=> $item->creator->name,'type' => 'creator'];
+                    }
+
+
+
+                }
+
+
+                return new JsonResponse($serializerInterface->serialize($data,'json'));
+            case 'POST':
+
+                return new JsonResponse([true]);
+            case 'PUT':
+                dump('sei nel PUT modifica una');
+                // Aggiorna una composizione esistente
+                break;
+            case 'DELETE':
+                dump('elimina una o forse più vediamo');
+                // Elimina una composizione
+                break;
+        }
+        return new JsonResponse (['errore']);
+    }
 }

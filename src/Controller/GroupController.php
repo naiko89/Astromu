@@ -19,6 +19,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class GroupController extends AbstractController
 {
@@ -53,7 +56,6 @@ class GroupController extends AbstractController
                 dump($text);
                 break;
             case 'PUT':
-                dump('sei nel PUT modifica una');
                 // Aggiorna una composizione esistente
                 break;
             case 'DELETE': //--->cascade elimination with research for dissociated container and composition
@@ -103,9 +105,6 @@ class GroupController extends AbstractController
     public function researchForForm(Request $request, CreatorRepository $creatorRepository
         ,GroupRepository $groupRepository, BuildingGroupCreatorRepository $buildingGroupCreatorRepository, SerializationService $serializationService): JsonResponse
     {
-
-        dump('sei dentro la ricerca del form');
-
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
@@ -121,6 +120,89 @@ class GroupController extends AbstractController
                     $creatorGroup->setTeam($group);
                     $buildingGroupCreatorRepository->save($creatorGroup, true);
                 }
+                return new JsonResponse([true]);
+                break;
+            case 'PUT':
+                dump('sei nel PUT modifica una');
+                // Aggiorna una composizione esistente
+                break;
+            case 'DELETE':
+                dump('elimina una o forse più vediamo');
+                // Elimina una composizione
+                break;
+        }
+        return new JsonResponse (['errore']);
+
+
+    }
+
+
+    /**
+     * @Route("/api/group/editor", name="group_editor", methods={"GET", "POST", "PUT", "DELETE"})
+     */
+    public function researchForEditor(Request $request, CreatorRepository $creatorRepository
+        ,GroupRepository $groupRepository, BuildingGroupCreatorRepository $buildingGroupCreatorRepository, SerializationService $serializationService,
+                                      AssociationContaRepository $associationContaRepository,SerializerInterface $serializerInterface): JsonResponse
+    {
+        $method = $request->getMethod();
+        switch ($method) {
+            case 'GET':
+                $idGroup=$request->query->get('id');
+                $groupEntity = $groupRepository->find($idGroup);
+                $optionBase = [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    },
+                    'attributes' => [
+                        'id',
+                        'nation'=>['id','name'],
+                        'subNation'=>['id', 'name'],
+                        'name',
+                        'mtype',
+                        'dataOn',
+                        'dataOff',
+                        'labels',
+                        'nPublished',
+                        'isAssociated',
+                        'nCollaborated',
+                        'description',
+                        'photo',
+                    ]
+                ];
+
+                $options = [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    },
+                    'ignored_attributes' => ['containers', 'associationComp', 'team'],
+                    'attributes' => [
+                        'id',
+                        'associationCreator' => [
+                            'id',
+                            'creator' =>[
+                                'id',
+                                'name'
+                            ]
+                        ],
+                        'associationCont' => [
+                            'id',
+                            'container' =>[
+                                'id',
+                                'name',
+                                'associationCont' => ['id', 'name'],
+                            ]
+                        ]
+                    ]
+                ];
+
+                $data['group']=json_decode($serializerInterface->serialize($groupEntity, 'json', $optionBase));
+                $tmArray=json_decode($serializerInterface->serialize($groupEntity, 'json', $options));
+                $data['creators'] = $tmArray->associationCreator;
+                $data['containers'] = $tmArray->associationCont;
+
+                return new JsonResponse($serializerInterface->serialize($data, 'json'));
+            case 'POST':
+
                 return new JsonResponse([true]);
                 break;
             case 'PUT':

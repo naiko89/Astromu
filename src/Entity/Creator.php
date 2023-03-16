@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CreatorRepository::class)]
 class Creator
@@ -42,6 +43,10 @@ class Creator
     private ?string $photo = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    /**
+     * @Assert\DateTime
+     * @var string A "Y-m-d H:i:s" formatted value
+     */
     private ?\DateTimeInterface $dateBirth = null;
 
     #[ORM\Column(nullable: true)]
@@ -61,6 +66,12 @@ class Creator
 
     #[ORM\Column]
     private ?bool $isAssociated = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $nPublished = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $nCollaborated = null;
 
     public function __construct()
     {
@@ -161,6 +172,7 @@ class Creator
     public function getDateBirth(): ?\DateTimeInterface
     {
         return $this->dateBirth;
+
     }
 
     public function setDateBirth(\DateTimeInterface $dateBirth): self
@@ -262,6 +274,30 @@ class Creator
     public function setIsAssociated(bool $isAssociated): self
     {
         $this->isAssociated = $isAssociated;
+
+        return $this;
+    }
+
+    public function getNPublished(): ?int
+    {
+        return $this->nPublished;
+    }
+
+    public function setNPublished(?int $nPublished): self
+    {
+        $this->nPublished = $nPublished;
+
+        return $this;
+    }
+
+    public function getNCollaborated(): ?int
+    {
+        return $this->nCollaborated;
+    }
+
+    public function setNCollaborated(?int $nCollaborated): self
+    {
+        $this->nCollaborated = $nCollaborated;
 
         return $this;
     }

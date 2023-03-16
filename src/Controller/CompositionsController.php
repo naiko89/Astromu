@@ -33,8 +33,7 @@ class CompositionsController extends AbstractController
     {
         $method = $request->getMethod();
 
-        $syllable = new Syllable('it');
-        //dump(str_replace("&shy;", "-",$syllable->hyphenateText('ciao mi chiamo nicola')));
+
 
         switch ($method) {
             case 'GET':
@@ -116,6 +115,27 @@ class CompositionsController extends AbstractController
         }
         return new JsonResponse (['errore']);
 
+
+    }
+
+    /**
+     * @Route("/api/composition/editor/fistanaly", name="composition_editor_first_analy", methods={"GET", "POST", "PUT", "DELETE"})
+     */
+    public function researchForEditor(Request $request, CompositionRepository $compositionRepository): JsonResponse
+    {
+        $text = $request->query->get('text');
+        $verse = preg_split('/\r\n|\r|\n/', $text);
+
+        dump($verse);
+
+        $syllable = new Syllable('it');
+        dump(str_replace("&shy;", "-",$syllable->hyphenateText($text)));
+
+
+
+
+
+        return new JsonResponse(true);
 
     }
 }

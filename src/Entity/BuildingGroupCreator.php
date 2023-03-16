@@ -20,10 +20,10 @@ class BuildingGroupCreator
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOff = null;
 
-    #[ORM\ManyToOne(inversedBy: 'associationCreator')]
+    #[ORM\ManyToOne(inversedBy: 'associationGroup')]
     private ?Group $team = null;
 
-    #[ORM\ManyToOne(inversedBy: 'associationGroup')]
+    #[ORM\ManyToOne(inversedBy: 'associationCreator')]
     private ?Creator $creator = null;
 
     public function getId(): ?int

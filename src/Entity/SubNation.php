@@ -27,6 +27,9 @@ class SubNation
     #[ORM\OneToMany(mappedBy: 'subNation', targetEntity: Group::class)]
     private Collection $groupsSubNation;
 
+    #[ORM\Column(length: 5)]
+    private ?string $zipCode = null;
+
 
     public function __construct()
     {
@@ -119,6 +122,18 @@ class SubNation
                 $groupsSubNation->setSubNation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(string $zipCode): self
+    {
+        $this->zipCode = $zipCode;
 
         return $this;
     }

@@ -10,12 +10,16 @@ use App\Repository\CompositionRepository;
 use App\Repository\ContainerRepository;
 use App\Repository\CreatorRepository;
 use App\Repository\GroupRepository;
+use App\Repository\NationRepository;
+use App\Repository\SubNationRepository;
 use App\Service\SerializationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use DateTime;
 
 class CreatorController extends AbstractController
 {
@@ -58,7 +62,7 @@ class CreatorController extends AbstractController
                     $entitiesModified = ['groups'=>[],'containers'=>[],'compositions'=>[]];
 
 
-                    foreach ($associationsCreatorGroups as $associationCreatorGroup){
+                    foreach ($associationsCreatorGroups as $associationCreatorGroup){ //-->groups associated with the creator
                         $entitiesModified['groups'][] = $associationCreatorGroup->getTeam();
                         //$associatonGroup = $buildingGroupCreatorRepository->findBy(['creator'=>$associationCreatorGroup->getCreator()->getId()]);
                         $buildingGroupCreatorRepository->remove($associationCreatorGroup, true);
@@ -150,4 +154,132 @@ class CreatorController extends AbstractController
 
 
     }
+
+    /**
+     * @Route("/api/creator/editor", name="creator_editor", methods={"GET", "POST", "PUT", "DELETE"})
+     */
+    public function researchForEditor(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+        , SerializationService $serializationService,SerializerInterface $serializerInterface, NationRepository $nationRepository, SubNationRepository $subNationRepository): JsonResponse
+    {
+
+        $method = $request->getMethod();
+        switch ($method) {
+            case 'GET':
+                $id = $request->query->get('id');
+                $creatorEntity=$creatorRepository->find($id);
+                $optionBase = [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    },
+                    'attributes' => [
+                        'id',
+                        'subNation'=>['id'],
+                        'nation' => ['id'],
+                        'name',
+                        'firstname',
+                        'surname',
+                        'description',
+                        'photo',
+                        'dateBirth',
+                        'compNumber',
+                        'contNumber',
+                        'isAssociated',
+                        'nPublished',
+                        'nCollaborated'
+                    ]
+                ];
+
+                $options = [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    },
+                    'attributes' => [
+                        'associationGroup' => [
+                            'id',
+                            'team' =>[
+                                'id',
+                                'name',
+                                'associationCont' =>[
+                                    'id',
+                                    'container' => [
+                                        'id',
+                                        'name'
+                                    ]
+                                ]
+                            ]
+                        ],
+                        'associationCont' => [
+                            'id',
+                            'container' =>[
+                                'id',
+                                'name',
+                                'associationCont' => [
+                                    'id',
+                                    'creator' =>['id','name']
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+
+                $optionSupport = [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    },
+                    'attributes' => [
+                          'id',
+                          'name',
+                          'subnations' => ['id', 'name']
+                        ]
+                ];
+
+                // dump($creatorEntity);dump($serializerInterface->serialize($creatorEntity, 'json', $options));
+
+                $data['creator'] = json_decode($serializerInterface->serialize($creatorEntity, 'json', $optionBase));
+                $tmArray=json_decode($serializerInterface->serialize($creatorEntity, 'json', $options));
+                $data['groups'] = $tmArray->associationGroup;
+                $data['containers'] = $tmArray->associationCont;
+                $data['support'] = ['nations' => json_decode($serializerInterface->serialize($nationRepository->findAll(), 'json', $optionSupport))];
+
+
+                return new JsonResponse($serializerInterface->serialize($data, 'json'));
+            case 'POST':
+
+
+
+                //$creator->setName($request->query->get('creator'))->setIsAssociated(true);
+                //$creatorRepository->save($creator, true);
+                return new JsonResponse([true]);
+                break;
+            case 'PUT':
+
+                $data = $request->query->get('data');
+                $creatorData = json_decode($data);
+                $creatorEntity = $creatorRepository->find($creatorData->id);
+
+                dump($creatorData->nation);
+                dump($creatorData->subNation);
+
+
+
+                $creatorEntity->setName($creatorData->name)
+                    ->setFirstname($creatorData->firstname)
+                    ->setSurname($creatorData->surname)
+                    ->setDateBirth(DateTime::createFromFormat('Y-m-d', $creatorData->dateBirth))
+                    ->setNation($nationRepository->find($creatorData->nation->id))
+                    ->setSubNation($subNationRepository->find($creatorData->subNation->id))
+                    ->setDescription($creatorData->description);
+
+                $creatorRepository->save($creatorEntity, true);
+                return  new JsonResponse([true]);
+            case 'DELETE':
+                dump('elimina una o forse più vediamo');
+                // Elimina una composizione
+                break;
+        }
+        return new JsonResponse (['error']);
+
+
+    }
+
 }

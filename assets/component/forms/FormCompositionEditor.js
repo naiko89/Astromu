@@ -24,7 +24,7 @@ class FormCompositionEditor extends React.Component{
     }
 
     render() {
-        let textarea = this.props.formValues.textarea
+        let textarea = this.props.formValues.textarea //-->here to textarea new line
         let select = this.props.formValues.select
         let submit,formAction
 
@@ -41,8 +41,8 @@ class FormCompositionEditor extends React.Component{
             <>
                 <form className="container p-0" onSubmit={formAction}>
                     <div className="row mb-2">
-                        <div className="col-12 mb-2">
-                            <select id="tipo-testo" value={select || false} className="form-select text-center" onChange={this.props.onChangeSup} name="select">
+                        <div className="col-12">
+                            <select id="tipo-testo" value={select || false} className="form-select form-select-sm text-center" onChange={this.props.onChangeSup} name="select">
                                 <option value="false">Seleziona la Definizione</option>
                                 <option value="S">S</option>
                                 <option value="R">R</option>
@@ -50,18 +50,28 @@ class FormCompositionEditor extends React.Component{
                             </select>
                         </div>
 
-                        <div className="col-12">
-                            <textarea className="form-control textarea-compact p-1" onChange={this.props.onChangeSup} value={textarea || ""} name="textarea"/>
-                        </div>
-                    </div>
+                        <div className="col-12 mt-2">
 
+                            <textarea
+                                className="form-control form-control-sm textarea-compact p-1"
+                                onChange={this.props.onChangeSup}
+                                value={textarea || ""}
+                                name="textarea"
+                                rows="4"
+                                placeholder="Inserisci il testo qui..."
+                            />
+
+                        </div>
+
+                    </div>
                     <div className="row">
                         <div className="col-12">
-                            <input className={"btn btn-success"} type='submit' value={submit}/>
+                            <button className={"btn btn-success btn-sm"} type="submit">
+                                {submit}
+                            </button>
                         </div>
                     </div>
                 </form>
-                <h3></h3>
             </>
         )
     }

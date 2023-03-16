@@ -19,9 +19,6 @@ const ItemContainer = (props) => {
 
     const handleModify = () => {
         console.log(props)
-
-        alert('se dentro handle del item del gruppo')
-
         props.showEditGroup(props.value.id)
     }
 

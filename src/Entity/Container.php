@@ -34,9 +34,6 @@ class Container
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $label = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $productor = null;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
@@ -45,6 +42,12 @@ class Container
 
     #[ORM\Column]
     private ?bool $isAssociated = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
+
+    #[ORM\OneToMany(mappedBy: 'container', targetEntity: AssociationConta::class)]
+    private Collection $associationCont;
 
     public function __construct()
     {}
@@ -115,18 +118,6 @@ class Container
         return $this;
     }
 
-    public function getProductor(): ?string
-    {
-        return $this->productor;
-    }
-
-    public function setProductor(?string $productor): self
-    {
-        $this->productor = $productor;
-
-        return $this;
-    }
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -159,6 +150,48 @@ class Container
     public function setIsAssociated(bool $isAssociated): self
     {
         $this->isAssociated = $isAssociated;
+
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AssociationConta>
+     */
+    public function getAssociationCont(): Collection
+    {
+        return $this->associationCont;
+    }
+
+    public function addAssociationCont(AssociationConta $associationCont): self
+    {
+        if (!$this->associationCont->contains($associationCont)) {
+            $this->associationCont->add($associationCont);
+            $associationCont->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssociationCont(AssociationConta $associationCont): self
+    {
+        if ($this->associationCont->removeElement($associationCont)) {
+            // set the owning side to null (unless already changed)
+            if ($associationCont->getCreator() === $this) {
+                $associationCont->setCreator(null);
+            }
+        }
 
         return $this;
     }

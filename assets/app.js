@@ -33,8 +33,15 @@ import PageTwo from "./pages/DropDownPages/PageTwo"
 import PageThree from "./pages/DropDownPages/PageThree"
 import ShowGroup from "./pages/ShowGroup";
 
+import { registerLocale, setDefaultLocale } from "react-datepicker";
+import { it } from "date-fns/locale";
+
+
 
 require ('/assets/Main')
+
+registerLocale("it", it);
+setDefaultLocale("it");
 
 ReactDOM.createRoot(document.getElementById("app")).render(
         <BrowserRouter>
