@@ -1,6 +1,7 @@
 import React from 'react';
-import ColumnCard from "../editor/EditorComposition";
+import EditorComposition from "../editor/EditorComposition";
 import ListCompositions from "../component/lists/ListCompositions"
+
 
 class ShowCompositions extends  React.Component {
     constructor(props) {
@@ -19,10 +20,12 @@ class ShowCompositions extends  React.Component {
         this.handleHideCompositionEdit = this.handleHideCompositionEdit.bind(this)
     }
 
-    handleShowCompositionEdit(id){
+    handleShowCompositionEdit(id, name){
         let tempState = this.state
         tempState.viewMode.show = true
         tempState.viewMode.composition.id = id
+        tempState.viewMode.composition.name = name
+
         this.setState(tempState)
     }
 
@@ -32,11 +35,10 @@ class ShowCompositions extends  React.Component {
         this.setState(tempState)
     }
 
-
     render() {
 
         let View = this.state.viewMode.show ?
-             <ColumnCard id={this.state.viewMode.composition.id} hideEditComp={this.handleHideCompositionEdit}></ColumnCard> :
+             <EditorComposition id={this.state.viewMode.composition.id} name={this.state.viewMode.composition.name} hideEditComp={this.handleHideCompositionEdit}></EditorComposition> :
              <ListCompositions showEditComp={this.handleShowCompositionEdit}  id={this.state.viewMode.composition.id}></ListCompositions>;
 
         return (
@@ -50,11 +52,3 @@ class ShowCompositions extends  React.Component {
 }
 
 export default ShowCompositions;
-
-
-//<ul className="nav" id="myTab">
-//{linksCardsHeader}
-//</ul>
-
-
-// <BoxedColumMenu cardTitle='Titolo ShowCompositions Column'> </BoxedColumMenu>

@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from "./component/bars/Navbar"
+import AstromuNavbar from "./component/bars/AstromuNavbar"
 import { Outlet } from "react-router-dom";
 
 const $ = require('jquery');
@@ -13,16 +13,15 @@ class Main extends React.Component{
         }
     }
 
-
     render() {
 
         return (
-            <div className="Main">
-                <Navbar nomeUser = {this.state.name}/>
+            <div className="Main ">
+                <AstromuNavbar nomeUser = {this.state.name}/>
 
                 <div id="resizable" className="bg-danger"></div>
 
-                <div className="">
+                <div className="pb-sm-2">
                     <Outlet></Outlet>
                 </div>
             </div>

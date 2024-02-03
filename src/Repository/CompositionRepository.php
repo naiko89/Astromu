@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Composition;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use http\Env\Response;
 
 /**
  * @extends ServiceEntityRepository<Composition>
@@ -17,11 +16,19 @@ use http\Env\Response;
  */
 class CompositionRepository extends ServiceEntityRepository
 {
+    /**
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Composition::class);
     }
 
+    /**
+     * @param Composition $entity
+     * @param bool $flush
+     * @return void
+     */
     public function save(Composition $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -30,6 +37,12 @@ class CompositionRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    /**
+     * @param Composition $entity
+     * @param bool $flush
+     * @return void
+     */
 
     public function remove(Composition $entity, bool $flush = false): void
     {
@@ -40,7 +53,12 @@ class CompositionRepository extends ServiceEntityRepository
         }
     }
 
-    public function finByName($value)
+    /**
+     * @param $value
+     * @return float|int|mixed|string
+     */
+
+    public function findByName($value)
     {
         return $this->getEntityManager()->createQueryBuilder()
             ->select('o')

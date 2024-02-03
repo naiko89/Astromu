@@ -16,16 +16,30 @@ use App\Service\SerializationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use voku\helper\AntiXSS;
 use DateTime;
 
 class CreatorController extends AbstractController
 {
+
     /**
+     * @param Request $request
+     * @param CompositionRepository $compositionRepository
+     * @param ContainerRepository $containerRepository
+     * @param CreatorRepository $creatorRepository
+     * @param AssociationContaRepository $associationContaRepository
+     * @param SerializationService $serializationService
+     * @param BuildingGroupCreatorRepository $buildingGroupCreatorRepository
+     * @param AssociationCompoRepository $associationCompoRepository
+     * @param GroupRepository $groupRepository
      * @Route("/api/creator", name="creator_index", methods={"GET", "POST", "PUT", "DELETE"})
+     * @return JsonResponse
+     * @throws ExceptionInterface
      */
+
     public function index(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
         ,AssociationContaRepository $associationContaRepository, SerializationService $serializationService
         ,BuildingGroupCreatorRepository $buildingGroupCreatorRepository, AssociationCompoRepository $associationCompoRepository,
@@ -42,23 +56,22 @@ class CreatorController extends AbstractController
                     }
                     else{
                         return new JsonResponse($serializationService->serialize(
-                            $creatorRepository->findByName($text.'%'),'creatorList:read')
+                            $creatorRepository->findByName($text . '%'),'creatorList:read')
                         );
                     }
                 case 'POST':
                     // Crea una nuova composizione
-                    dump($text);
+                    //dump($text);
                     break;
                 case 'PUT':
-                    dump('sei nel PUT modifica una');
+                    //dump('sei nel PUT modifica una');
                     // Aggiorna una composizione esistente
                     break;
                 case 'DELETE':
 
                     $associationsCreatorGroups = $buildingGroupCreatorRepository->findBy(['creator'=>$request->query->get('id')]);
                     $associationsCreatorContainers = $associationContaRepository->findBy(['creator'=>$request->query->get('id')]); ///--->dovrai anche cercare di togliere i container che sono legati a gruppi che tolti i creatori si dissociano
-                    $creatorEntity = $creatorRepository->find($request->query->get('id'))->setIsAssociated(false);
-                    $creatorRepository->save($creatorEntity, true);
+                    $creatorEntity = $creatorRepository->find($request->query->get('id'));
                     $entitiesModified = ['groups'=>[],'containers'=>[],'compositions'=>[]];
 
 
@@ -83,8 +96,7 @@ class CreatorController extends AbstractController
 
                     foreach ($entitiesModified['groups'] as $assoGroupModified){ //-->indirectly for a group could be disassociated because there aren't other associations with creator  cascade from group--->container--->composition
                         if(count($buildingGroupCreatorRepository->findBy(["team"=>$assoGroupModified]))===0){
-                            $groupDisasEntity=$groupRepository->find($assoGroupModified)->setIsAssociated(false);
-                            $groupRepository->save($groupDisasEntity, true);
+                            $groupDisasEntity=$groupRepository->find($assoGroupModified);
                             //-->it's like group delete in group controller
                             $associationsContainersGroup = $associationContaRepository->findBy(['team' => $groupDisasEntity->getId()]);
                             foreach ($associationsContainersGroup as $associationsContainerGroup){//-->remove all group's associations (containers and compositions)
@@ -96,26 +108,30 @@ class CreatorController extends AbstractController
                                 }
                                 $associationContaRepository->remove($associationsContainerGroup, true); //
                             }
+                            $groupRepository->remove($groupDisasEntity, true);
                         }
+
                     }
 
 
                     foreach ($entitiesModified['containers'] as $conModified) {//-->check if the container is still associated
                         $containerAssociations = $associationContaRepository->findBy(['container' => $conModified->getContainer()->getId()]);
                         if (count($containerAssociations) === 0) {
-                            $containerDisass = $containerRepository->find($conModified->getContainer()->getId())->setIsAssociated(false);
-                            $containerRepository->save($containerDisass, true);
+                            $containerDisass = $containerRepository->find($conModified->getContainer()->getId());
+                            $containerRepository->remove($containerDisass, true);
                         }
                     }
 
                     foreach ($entitiesModified['compositions'] as $comModified) {//-->check if the composition is still associated
                         $compositionAssociations = $associationCompoRepository->findBy(['composition'=>$comModified->getComposition()->getId()]);
                         if(count($compositionAssociations) === 0){
-                            $compositionDisass = $compositionRepository->find($comModified->getComposition()->getId())->setIsAssociated(false);
-                            $compositionRepository->save($compositionDisass, true);
+                            $compositionDisass = $compositionRepository->find($comModified->getComposition()->getId());
+                            $compositionRepository->remove($compositionDisass, true);
                         }
                     }
 
+                    // $creatorRepository->save($creatorEntity, true);
+                    $creatorRepository->remove($creatorEntity, true);
                     //dump('the  ids to verify are:');dump($assoGroupModified);dump('--------');dump($assoContModified);dump('--------');dump($assoCompModified);
                     return new JsonResponse([true]);
             }
@@ -125,10 +141,12 @@ class CreatorController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param CreatorRepository $creatorRepository
      * @Route("/api/creator/form", name="creator_form", methods={"GET", "POST", "PUT", "DELETE"})
+     * @return JsonResponse
      */
-    public function researchForForm(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        , SerializationService $serializationService): JsonResponse
+    public function researchForForm( Request $request, CreatorRepository $creatorRepository ): JsonResponse
     {
 
             $method = $request->getMethod();
@@ -142,11 +160,11 @@ class CreatorController extends AbstractController
                     return new JsonResponse([true]);
                     break;
                 case 'PUT':
-                    dump('sei nel PUT modifica una');
+                    //dump('sei nel PUT modifica una');
                     // Aggiorna una composizione esistente
                     break;
                 case 'DELETE':
-                    dump('elimina una o forse più vediamo');
+                    //dump('elimina una o forse più vediamo');
                     // Elimina una composizione
                     break;
             }
@@ -156,12 +174,19 @@ class CreatorController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param CreatorRepository $creatorRepository
+     * @param SerializerInterface $serializerInterface
+     * @param NationRepository $nationRepository
+     * @param SubNationRepository $subNationRepository
+     * @param AntiXSS $antiXSS
      * @Route("/api/creator/editor", name="creator_editor", methods={"GET", "POST", "PUT", "DELETE"})
+     * @return JsonResponse
      */
-    public function researchForEditor(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        , SerializationService $serializationService,SerializerInterface $serializerInterface, NationRepository $nationRepository, SubNationRepository $subNationRepository): JsonResponse
+    public function researchForEditor(Request $request, CreatorRepository $creatorRepository,
+                                      SerializerInterface $serializerInterface, NationRepository $nationRepository,
+                                      SubNationRepository $subNationRepository, AntiXSS $antiXSS): JsonResponse
     {
-
         $method = $request->getMethod();
         switch ($method) {
             case 'GET':
@@ -179,7 +204,6 @@ class CreatorController extends AbstractController
                         'firstname',
                         'surname',
                         'description',
-                        'photo',
                         'dateBirth',
                         'compNumber',
                         'contNumber',
@@ -203,7 +227,8 @@ class CreatorController extends AbstractController
                                     'id',
                                     'container' => [
                                         'id',
-                                        'name'
+                                        'name',
+                                        'datePublish'
                                     ]
                                 ]
                             ]
@@ -213,6 +238,7 @@ class CreatorController extends AbstractController
                             'container' =>[
                                 'id',
                                 'name',
+                                'datePublish',
                                 'associationCont' => [
                                     'id',
                                     'creator' =>['id','name']
@@ -233,34 +259,24 @@ class CreatorController extends AbstractController
                         ]
                 ];
 
-                // dump($creatorEntity);dump($serializerInterface->serialize($creatorEntity, 'json', $options));
-
+                $photo = $creatorEntity->getPhoto();
                 $data['creator'] = json_decode($serializerInterface->serialize($creatorEntity, 'json', $optionBase));
+                $data['creator']->photo = ($photo == null) ? null : 'data:image/png;base64,'.base64_encode(stream_get_contents($photo));
+
+
                 $tmArray=json_decode($serializerInterface->serialize($creatorEntity, 'json', $options));
                 $data['groups'] = $tmArray->associationGroup;
                 $data['containers'] = $tmArray->associationCont;
                 $data['support'] = ['nations' => json_decode($serializerInterface->serialize($nationRepository->findAll(), 'json', $optionSupport))];
 
-
                 return new JsonResponse($serializerInterface->serialize($data, 'json'));
             case 'POST':
-
-
-
-                //$creator->setName($request->query->get('creator'))->setIsAssociated(true);
-                //$creatorRepository->save($creator, true);
                 return new JsonResponse([true]);
-                break;
             case 'PUT':
 
                 $data = $request->query->get('data');
                 $creatorData = json_decode($data);
                 $creatorEntity = $creatorRepository->find($creatorData->id);
-
-                dump($creatorData->nation);
-                dump($creatorData->subNation);
-
-
 
                 $creatorEntity->setName($creatorData->name)
                     ->setFirstname($creatorData->firstname)
@@ -270,10 +286,19 @@ class CreatorController extends AbstractController
                     ->setSubNation($subNationRepository->find($creatorData->subNation->id))
                     ->setDescription($creatorData->description);
 
+                // dump($creatorData->photo);
+
+                if($creatorData->photo !== null){
+                    $photoBase64Uri = explode(',', $antiXSS->xss_clean($creatorData->photo));
+                    $photoBlob = base64_decode($photoBase64Uri[1]);
+                    $creatorEntity->setPhoto($photoBlob);
+                }
+
                 $creatorRepository->save($creatorEntity, true);
+
                 return  new JsonResponse([true]);
             case 'DELETE':
-                dump('elimina una o forse più vediamo');
+                // dump('elimina una o forse più vediamo');
                 // Elimina una composizione
                 break;
         }

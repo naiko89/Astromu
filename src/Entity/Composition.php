@@ -41,12 +41,16 @@ class Composition
     #[ORM\OneToMany(mappedBy: 'composition', targetEntity: AssociationCompo::class)]
     private Collection $assoChain;
 
+    #[ORM\OneToMany(mappedBy: 'composition', targetEntity: CompositionPieces::class, orphanRemoval: true)]
+    private Collection $peaces;
+
 
     public function __construct()
     {
         $this->assocaitionComp = new ArrayCollection();
         $this->associationCont = new ArrayCollection();
         $this->assoChain = new ArrayCollection();
+        $this->peaces = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -186,6 +190,36 @@ class Composition
             // set the owning side to null (unless already changed)
             if ($assoChain->getComposition() === $this) {
                 $assoChain->setComposition(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CompositionPieces>
+     */
+    public function getPeaces(): Collection
+    {
+        return $this->peaces;
+    }
+
+    public function addPeace(CompositionPieces $peace): self
+    {
+        if (!$this->peaces->contains($peace)) {
+            $this->peaces->add($peace);
+            $peace->setComposition($this);
+        }
+
+        return $this;
+    }
+
+    public function removePeace(CompositionPieces $peace): self
+    {
+        if ($this->peaces->removeElement($peace)) {
+            // set the owning side to null (unless already changed)
+            if ($peace->getComposition() === $this) {
+                $peace->setComposition(null);
             }
         }
 

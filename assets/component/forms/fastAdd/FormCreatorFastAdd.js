@@ -28,6 +28,8 @@ class FormCreatorFastAdd extends React.Component{
         event.preventDefault()
         let uriFragment = queryString.stringify(this.state.form)
 
+        console.log(this.state.form)
+
         if(this.state.form.creator !=='')
         {
             fetch(`/api/creator/form?${uriFragment}`, {
@@ -70,21 +72,23 @@ class FormCreatorFastAdd extends React.Component{
             <>
                 <Modal show={display} onHide={this.handleClose} size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>Aggiungi Creatore</Modal.Title>
+                        <Modal.Title>Aggiungi Cantante</Modal.Title>
                     </Modal.Header>
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome Creatore" onChange={this.onChangeCreator} value={this.state.form.creator}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Cantante" onChange={this.onChangeCreator} value={this.state.form.creator}/>
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">
+                        <Button variant="secondary" type="submit">
                             Salva
                         </Button>
-                        <Button variant="primary">
+                        {/*
+                        <Button variant="secondary">
                             Salva e Apri
                         </Button>
+                        */}
                     </Modal.Footer>
                     </Form>
                 </Modal>

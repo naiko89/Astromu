@@ -47,16 +47,19 @@ class ListCompositions extends React.Component {
         this.setState({searchValue:event.target.value})
         this.getList(value)
     }
-    showEditComposition(id){
-        this.props.showEditComp(id)
+    showEditComposition(id, name){
+        this.props.showEditComp(id, name)
     }
 
     render() {
 
         let value = this.state.searchValue
         let listItems = this.state.list.map(
-            (item, index) => <ItemComposition key={index} value={item} childRend={this.handleChildRender}
+            (item, index) => <ItemComposition key={index}
+                                              value={item}
+                                              childRend={this.handleChildRender}
                                               showEditComp={this.showEditComposition}>
+
             </ItemComposition>)
         let displayComposition = this.state.formComposition
 

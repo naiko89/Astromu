@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\VisitesService;
 
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -13,10 +14,9 @@ class IndexController extends AbstractController
      /**
      * @Route("/index/{reactRouting}", name="app_index", priority="-1", defaults={"reactRouting": null}, requirements={"reactRouting"=".+"})
      */
-    public function index(TokenStorageInterface $tokenStorage): Response
+    public function index(TokenStorageInterface $tokenStorage, VisitesService $visitesService): Response
     {
-        //devo passare il token o cambiare tipologia di autenticazione? da capire soprattutto quando faccio le chiamate ajax
-
+        $visitesService->trackVisitor(true);
         $user = $this->getUser();
         return $this->render('index/main.html.twig', [
             'controller_name' => 'IndexController',

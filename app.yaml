@@ -1,0 +1,16 @@
+runtime: php81
+# threadsafe: true
+
+handlers:
+  # tell appengine where our static assets live
+  - url: /bundles
+    static_dir: web/bundles
+
+  # the symfony front controller
+  - url: /.*
+    script: web/app_login.php
+
+# [START env_vars]
+env_variables:
+  SYMFONY_ENV: prod
+# [END env_vars]

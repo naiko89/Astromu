@@ -41,8 +41,6 @@ class CreatorRepository extends ServiceEntityRepository
 
     public function findByName($value) {
 
-        dump('sei dentro'. $value);
-
         return $this->getEntityManager()->createQueryBuilder()
             ->select('o')
             ->from(Creator::class, 'o')

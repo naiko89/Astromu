@@ -112,7 +112,7 @@ class FormGroupFastAdd extends React.Component{
             tempState.temp.creator = ''
         }
         else{
-            alert('Hai già inserito questo Creatore')
+            alert('Hai già inserito questo Cantante')
         }
 
         this.setState(tempState)
@@ -123,15 +123,18 @@ class FormGroupFastAdd extends React.Component{
         let display=this.props.display
         let contSel = this.state.form.creatorSel
         let listCreator = Object.values(this.state.list.creator).map((item, index) => {
-            return <ListGroup.Item key={index} className={'item-search-creator'} value={item.name} onClick={()=>this.selectCreator(item)}>
+            return <div className={'btn btn-outline-secondary rounded-0 mt-1'} key={index} onClick={()=>this.selectCreator(item)}> {/*className={'item-search-creator'}*/}
                 { item.name }
-            </ListGroup.Item>
+            </div>
         })
         let listSelectedCreator = Object.values(this.state.form.selectedMembers).map((item, index) => {
             return <ListGroup.Item key={index} className={'rounded-pill me-1 item-search-creator'} value={item.name} onClick={()=>this.removeCreator(item)}>
                 { item.name }
             </ListGroup.Item>
         })
+
+
+        console.log(listCreator.length)
 
         return (
             <>
@@ -143,30 +146,37 @@ class FormGroupFastAdd extends React.Component{
                     <Modal.Body>
 
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome Gruppo" onChange={this.onChangeGroup} value={this.state.form.Group}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Gruppo" onChange={this.onChangeGroup} value={this.state.form.Group}/>
                         </Form.Group>
 
                         <Form.Group controlId="formValTwo" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Creatore" onChange={this.onChangeCreator} value={this.state.temp.creator}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci i Componenti del Gruppo" onChange={this.onChangeCreator} value={this.state.temp.creator}/>
                             <ListGroup className={'mt-2'}>
-                                { contSel ? '' : listCreator }
+                                {listCreator.length === 0 ? '' : (
+                                    <div className="list-group list-group-flush border border-1 mt-3 p-2 parent pt-3">
+                                        <div className={'child border border-1 pe-2 ps-2'}> Cantanti </div>
+                                        {listCreator}
+                                    </div>
+                                )}
                             </ListGroup>
                         </Form.Group>
 
                         <Form.Group>
-                            <ListGroup horizontal className={'mt-2'}>
+                            <ListGroup horizontal className={''}>
                                 { listSelectedCreator }
                             </ListGroup>
                         </Form.Group>
 
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">
+                        <Button variant="secondary" type="submit">
                             Salva
                         </Button>
+                        {/*
                         <Button variant="primary">
                             Salva e Apri
                         </Button>
+                        */}
                     </Modal.Footer>
                     </Form>
                 </Modal>

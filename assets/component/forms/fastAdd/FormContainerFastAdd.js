@@ -108,7 +108,7 @@ class FormContainerFastAdd extends React.Component{
             let found = false
             tempState.form.selectedAuthors.map(i => {
                 if (item.name === i.name) {
-                    console.log("Hai già inserito questo Creatore "+i.name);
+                    // console.log("Hai già inserito questo Creatore "+i.name);
                     found=true
                 }
             })
@@ -134,17 +134,19 @@ class FormContainerFastAdd extends React.Component{
         let contSel = this.state.form.authorSel
         let listAuthor = this.state.list.authors || {creator:[], group:[]}
 
-        let authorListMerge = listAuthor.creator
-            .map((item, index) => {
-            return <ListGroup.Item key={index + '-a'} type={'creator'} className={'item-search-creator'} value={item.name} onClick={() => this.selectAuthor(item, 'creator')}>
-                {item.name}
-            </ListGroup.Item>
+
+        let authorCreatorsList = listAuthor.creator.map((item,index) =>{
+            return <div className={'btn btn-outline-secondary rounded-0 mt-1'} key={index + '-a'} onClick={()=>this.selectAuthor(item, 'creator')}> {/*className={'item-search-creator'}*/}
+                { item.name }
+            </div>
         })
-            .concat(listAuthor.group.map((item, index) =>{
-            return <ListGroup.Item key={index + '-g'} type={'group'} className={'item-search-group'} value={item.name} onClick={() => this.selectAuthor(item, 'group')}>
-                {item.name}
-            </ListGroup.Item>
-        }))
+
+
+        let authorGroupsList = listAuthor.group.map((item, index) =>{
+            return <div className={'btn btn-outline-secondary rounded-0 mt-1'} key={index + '-a'} onClick={()=>this.selectAuthor(item, 'group')}> {/*className={'item-search-creator'}*/}
+                { item.name }
+            </div>
+        })
 
 
         let listSelectedAuthor = Object.values(this.state.form.selectedAuthors).map((item, index) => {
@@ -157,36 +159,56 @@ class FormContainerFastAdd extends React.Component{
             <>
                 <Modal show={display} onHide={this.handleClose} size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>Aggiungi Contenitore</Modal.Title>
+                        <Modal.Title>Aggiungi Album</Modal.Title>
                     </Modal.Header>
                     <Form onSubmit={this.handleSubmit}>
                     <Modal.Body>
 
                         <Form.Group controlId="formValOne" className={'mb-2'}>
-                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Nome Contenitore" onChange={this.onChangeContainer} value={this.state.form.container}/>
+                            <Form.Control type="text" autoComplete="off" placeholder="Inserisci Album" onChange={this.onChangeContainer} value={this.state.form.container}/>
                         </Form.Group>
 
                         <Form.Group controlId="formValTwo" className={'mb-2'}>
-                            <Form.Control type="text" list="containerOptions" autoComplete="off" placeholder="Aggiungi il Creator o Group Primario" onChange={(e) => this.onChangeAuthor(e)} value={this.state.temp.author}/>
+                            <Form.Control type="text" list="containerOptions" autoComplete="off" placeholder="Aggiungi i Creatori dell' Album" onChange={(e) => this.onChangeAuthor(e)} value={this.state.temp.author}/>
+
                             <ListGroup className={'mt-2'}>
-                                {contSel ? '' : authorListMerge}
+                                {authorCreatorsList.length === 0 ? '' : (
+                                    <div className="list-group list-group-flush border border-1 mt-3 p-2 parent pt-3">
+                                        <div className={'child border border-1 pe-2 ps-2'}> Cantanti </div>
+                                        { authorCreatorsList }
+                                    </div>
+                                )}
                             </ListGroup>
+
+                            <ListGroup className={'mt-2'}>
+                                {authorGroupsList.length === 0 ? '' : (
+                                    <div className="list-group list-group-flush border border-1 mt-3 p-2 parent pt-3">
+                                        <div className={'child border border-1 pe-2 ps-2'}> Gruppi </div>
+                                        { authorGroupsList }
+                                    </div>
+                                )}
+                            </ListGroup>
+
                         </Form.Group>
 
                         <Form.Group>
-                            <ListGroup horizontal className={'mt-2'}>
+                            <ListGroup horizontal className={''}>
                                 { listSelectedAuthor }
                             </ListGroup>
                         </Form.Group>
 
+
+
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">
+                        <Button variant="secondary" type="submit">
                             Salva
                         </Button>
+                        {/*
                         <Button variant="primary">
                             Salva e Apri
                         </Button>
+                        */}
                     </Modal.Footer>
                     </Form>
                 </Modal>

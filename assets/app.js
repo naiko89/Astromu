@@ -18,7 +18,7 @@ import $ from "jquery"
 // start the Stimulus application
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Popper from 'popper.js/dist/popper'
-//import 'bootstrap/dist/js/bootstrap.bundle'
+import 'bootstrap/dist/js/bootstrap.bundle'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import React from "react"
@@ -28,10 +28,9 @@ import ShowCompositions from "./pages/ShowCompositions"
 import ShowContainers from "./pages/ShowContainers"
 import ShowCreator from "./pages/ShowCreator"
 import Main from "./Main"
-import PageOne from "./pages/DropDownPages/PageOne"
-import PageTwo from "./pages/DropDownPages/PageTwo"
-import PageThree from "./pages/DropDownPages/PageThree"
 import ShowGroup from "./pages/ShowGroup";
+
+import ContextGlobally from "./context/ContextGlobally";
 
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import { it } from "date-fns/locale";
@@ -43,19 +42,45 @@ require ('/assets/Main')
 registerLocale("it", it);
 setDefaultLocale("it");
 
+
+
+global = {
+    changes : {
+        photo: {login:'', navbar:'/Images/logo.png' },
+        creator: { name:'Artista', plural: 'Artisti' },
+        group: { name:'Gruppo', plural: 'Gruppi' },
+        container: { name:'Album', plural: 'Album' },
+        composition: { name:'Canzone', plural:'Canzoni', pieces:{R: 'Ritornello', S:'Strofa', RR:'Ripetizione Ritornello'}}
+    },
+}
+global = {
+    changes:  {
+        photo: {login: '', navbar: '/Images/icon_recicle.png'},
+        creator: {name: 'Amministratore', plural: 'Amministratori'},
+        group: {name: 'Gruppo', plural: 'Gruppi'},
+        container: {name: 'Contenitore', plural: 'Contenitori'},
+        composition: {name: 'Creazione', plural: 'Creazioni', pieces:{R: 'R', S:'S', RR:'R R'}}
+    },
+}
+
+
+
+
+
 ReactDOM.createRoot(document.getElementById("app")).render(
+    <ContextGlobally.Provider value={global}>
         <BrowserRouter>
             <Routes>
                 <Route path="/index" element={<Main />}>
-                    <Route index element={<ShowCompositions />} />
+                    <Route index element={<ShowCreator />} />
                     <Route path="/index/show_comp" element={<ShowCompositions />} />
                     <Route path="/index/show_cont" element={<ShowContainers />} />
                     <Route path="/index/show_crea" element={<ShowCreator />} />
                     <Route path="/index/show_group" element={<ShowGroup />} />
-
                 </Route>
             </Routes>
         </BrowserRouter>
+    </ContextGlobally.Provider>
 );
 /*
 * Modified the database structure, made relations for the tables.

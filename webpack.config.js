@@ -14,6 +14,7 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 // only needed for CDN's or sub-directory deploy
 //.setManifestKeyPrefix('build/')
 
+
 /*
  * ENTRY CONFIG
  *

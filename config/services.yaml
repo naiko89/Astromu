@@ -4,6 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    wordsLevelOne: ['val1', 'val2']
+    vocalAcc:
+        acc: [ 'à', 'è', 'é', 'ì', 'ò', 'ó', 'ù', 'ú' ]
+        hash: [ '#a', '#e', '#e', '#i', '#o', '#o', '#u', '#u' ]
 
 services:
     # default configuration for services in *this* file
@@ -17,9 +21,29 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    voku\helper\AntiXSS:
+        autowire: true
 
+    App\Service\Analy\AccentuatorText:
+        arguments:
+            $vocalAccReplArr : '%vocalAcc%'
+            $dictionaryRepository : '@App\Repository\DictionaryRepository'
+
+
+
+    App\Service\Analy\LevelOneEditorText:
+        arguments:
+            $accentuator : '@App\Service\Analy\AccentuatorText'
+            $dictionaryReposit : '@App\Repository\DictionaryRepository'
+            $hyphenationExceptions : ['e-sten-de']
+
+    App\Service\VisitesService:
+        arguments:
+            $repo : '@App\Repository\VisitesRepository'
+            $enty : '@App\Entity\Visites'
+            $req : 'Symfony\Component\HttpFoundation\Request'
+            $parserBrowser : 'WhichBrowser\Parser'

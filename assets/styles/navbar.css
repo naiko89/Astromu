@@ -1,7 +1,47 @@
+
+.my-navbar{
+    top: 0 !important;
+    z-index: 999 !important;
+}
+
+.my-brand{
+    font-family: 'Chakra Petch', sans-serif;
+}
+
 .list-group-item:hover{
     background-color: rgba(128, 128, 128, 0.00) !important;
 }
 
 .nav-link:hover{
     background-color: rgba(128, 128, 128, 0.18) !important;
+}
+
+
+.navbar-collapse.collapse {
+    transition: all 1.5s ease-out !important;
+}
+
+@media (max-width: 767px) {
+    .my-brand{
+        font-size: 30px;
+    }
+    .navbar-icon{
+        font-size: 10px;
+    }
+
+}
+
+@media (min-width: 768px) {
+    .my-brand{
+        font-size: 20px;
+    }
+
+    .navbar-icon{
+        font-size: 16px;
+        color: grey;
+    }
+    .my-exit-button{
+        width: 120px;
+        height: 24px;
+    }
 }

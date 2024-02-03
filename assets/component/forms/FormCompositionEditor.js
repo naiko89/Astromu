@@ -6,26 +6,33 @@ class FormCompositionEditor extends React.Component{
     constructor(props) {
         super(props)
         this.props = props
+        //this.state = {select: this.props.select, textarea: this.props.textarea}
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleModify = this.handleModify.bind(this)
+        this.onChangeForm = this.onChangeForm.bind(this)
 
+    }
+
+    onChangeForm(event){
+        this.props.onChangeCompositionForm(event)
     }
 
     handleSubmit(event){
         event.preventDefault()
         this.props.handleSubmitCard()
-
+        //this.setState({select:'',textarea:''})
     }
 
     handleModify(event){
         event.preventDefault()
         this.props.handleModifyCard()
-
     }
 
     render() {
         let textarea = this.props.formValues.textarea //-->here to textarea new line
         let select = this.props.formValues.select
+        let typePiece = ['Strofa', 'Ritornello', 'Ripetizione Ritornello']
+        typePiece = this.props.placeholder.pieces
         let submit,formAction
 
         if(!this.props.formValues.trigger){
@@ -42,31 +49,30 @@ class FormCompositionEditor extends React.Component{
                 <form className="container p-0" onSubmit={formAction}>
                     <div className="row mb-2">
                         <div className="col-12">
-                            <select id="tipo-testo" value={select || false} className="form-select form-select-sm text-center" onChange={this.props.onChangeSup} name="select">
+                            <select id="tipo-testo" value={select || false} className="form-select form-select-sm text-center text-secondary" onChange={this.onChangeForm} name="select">
                                 <option value="false">Seleziona la Definizione</option>
-                                <option value="S">S</option>
-                                <option value="R">R</option>
-                                <option value="RM">RM</option>
+                                <option value="S">{typePiece.S}</option>
+                                <option value="R">{typePiece.R}</option>
+                                <option value="RR">{typePiece.RR}</option>
                             </select>
                         </div>
 
                         <div className="col-12 mt-2">
-
                             <textarea
                                 className="form-control form-control-sm textarea-compact p-1"
-                                onChange={this.props.onChangeSup}
+                                id="textarea-peace"
+                                onChange={this.onChangeForm}
                                 value={textarea || ""}
                                 name="textarea"
                                 rows="4"
                                 placeholder="Inserisci il testo qui..."
                             />
-
                         </div>
 
                     </div>
                     <div className="row">
                         <div className="col-12">
-                            <button className={"btn btn-success btn-sm"} type="submit">
+                            <button className={"btn btn-outline-secondary col-6 btn-sm align-items-end"} type="submit">
                                 {submit}
                             </button>
                         </div>
@@ -77,5 +83,16 @@ class FormCompositionEditor extends React.Component{
     }
 }
 
-
 export default FormCompositionEditor
+
+
+
+
+
+
+
+
+
+
+
+

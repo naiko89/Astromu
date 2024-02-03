@@ -62,8 +62,8 @@ class Group
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $photo = null;
+    #[ORM\Column(type: Types::BLOB, nullable: true)]
+    private $photo = null;
 
     public function __construct()
     {
@@ -299,12 +299,12 @@ class Group
         return $this;
     }
 
-    public function getPhoto(): ?string
+    public function getPhoto()
     {
         return $this->photo;
     }
 
-    public function setPhoto(?string $photo): self
+    public function setPhoto($photo): self
     {
         $this->photo = $photo;
 

@@ -102,9 +102,9 @@ class FormCompositionFastAdd extends React.Component{
         let display=this.props.display
         let contSel = this.state.temp.containerSel
         let listContainer = Object.values(this.state.list.container).map((item, index) => {
-                return <ListGroup.Item key={index} className={'item-search-container'} value={item.name} onClick={()=>this.selectContainer(item)}>
-                    { item.name }
-                </ListGroup.Item>
+            return <div className={'btn btn-outline-secondary rounded-0 mt-1'} key={index} onClick={()=>this.selectContainer(item)}> {/*className={'item-search-creator'}*/}
+                { item.name }
+            </div>
         })
 
         return (
@@ -120,18 +120,26 @@ class FormCompositionFastAdd extends React.Component{
                         </Form.Group>
                         <Form.Group controlId="formValTwo" className={'mb-2'}>
                             <Form.Control type="text" list="containerOptions" autoComplete="off" placeholder="Aggiungi Container" onChange={(e) => this.onChangeContainer(e)} value={this.state.temp.container}/>
-                            <ListGroup>
-                                {contSel ? '' : listContainer}
+                            <ListGroup className={'mt-2'}>
+                            {listContainer.length === 0 ? '' : (
+                                <div className="list-group list-group-flush border border-1 mt-3 p-2 parent pt-3">
+                                    <div className={'child border border-1 pe-2 ps-2'}> Contenitori </div>
+                                    {listContainer}
+                                </div>
+                            )}
                             </ListGroup>
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">
+                        <Button variant="secondary" type="submit">
                             Salva
                         </Button>
+                        {/*
                         <Button variant="primary">
                             Salva e Apri
                         </Button>
+                        */}
+
                     </Modal.Footer>
                     </Form>
                 </Modal>

@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MongoDB\BSON\Binary;
+use phpDocumentor\Reflection\File;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -39,8 +42,7 @@ class Creator
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $photo = null;
+
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     /**
@@ -72,6 +74,9 @@ class Creator
 
     #[ORM\Column(nullable: true)]
     private ?int $nCollaborated = null;
+
+    #[ORM\Column(type: Types::BLOB, nullable: true)]
+    private $photo = null;
 
     public function __construct()
     {
@@ -153,18 +158,6 @@ class Creator
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getPhoto(): ?string
-    {
-        return $this->photo;
-    }
-
-    public function setPhoto(?string $photo): self
-    {
-        $this->photo = $photo;
 
         return $this;
     }
@@ -298,6 +291,18 @@ class Creator
     public function setNCollaborated(?int $nCollaborated): self
     {
         $this->nCollaborated = $nCollaborated;
+
+        return $this;
+    }
+
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto($photo): self
+    {
+        $this->photo = $photo;
 
         return $this;
     }

@@ -9,17 +9,130 @@
     margin: 0 0 0 4px;
     padding: 4px 8px 4px 8px;
 }
-.icon-profile{
-    font-size: 80px;
-    height: 120px;
-    width: 120px;
-    background-color: rgba(233, 236, 239, 0.55);
+.icon-profile-box{
+    height: 140px;
+    width: 140px;
     border-radius: 50%;
-    color: #808080;
-    border: rgb(222, 226, 230) solid 1px;
+
 }
+.icon-profile{
+    font-size: 90px;
+    background-color: rgba(233, 236, 239, 0);
+    color: #808080;
+    border-radius: 50%;
+}
+
 
 .add-elements-icon{
     font-size: 16px;
 }
 
+.background-gradient-creator{
+    background: linear-gradient(to bottom, #dbdbdb 0%, #fff 10%);
+}
+
+.title-list{
+    background-color: rgb(238, 238, 238);
+}
+
+.date-publish-list{
+    font-size: 10px;
+}
+
+.creator-list-group-container-border{
+    border-color: rgb(244, 244, 244) !important;
+}
+
+.date-creator-container{
+    color: rgb(175, 180, 180);
+}
+@media (max-width: 576px) {
+    .margin-box-middle{
+        margin-bottom: 4px !important;
+    }
+
+    .container-editor{
+        margin: 0px 0px 0px 0px !important;
+        padding: 0 0 0 0 !important;
+    }
+}
+
+
+.img-bordered {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.img-bordered img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.img-bordered:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.img-bordered:hover:before {
+    border-color: #ddd;
+}
+
+.my-piece-composition{
+    font-size: 12px;
+}
+
+.my-word{
+    display: inline-block;
+}
+
+@media (max-width: 991px) and (min-width: 577px)  {
+   .margin-box-middle{
+       margin-bottom: 4px !important;
+   }
+
+}
+
+@media (max-width: 767px) {
+
+    .form-pieces{
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 999 !important;
+    }
+    .scrollable-pieces {
+        margin-bottom: 50px;
+    }
+    .my-word{
+        font-size: 15px;
+    }
+
+
+}
+
+
+@media (min-width: 767px) {
+    .scrollable-pieces {
+        overflow: auto;
+        max-width: 422px;
+        max-height: 1000px;
+    }
+    .my-form-add-pieces-composition{
+        max-width: 454px;
+        float: right;
+    }
+    .my-word{
+        font-size: 12px;
+    }
+
+
+}

@@ -11,21 +11,32 @@ use App\Repository\CreatorRepository;
 use App\Repository\GroupRepository;
 use App\Repository\AssociationContaRepository;
 use App\Service\SerializationService;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
+use DateTime;
+use voku\helper\AntiXSS;
 
 class ContainerController extends AbstractController
 {
     /**
+     * @param Request $request
+     * @param CompositionRepository $compositionRepository
+     * @param ContainerRepository $containerRepository
+     * @param AssociationContaRepository $associationContaRepository
+     * @param AssociationCompoRepository $associationCompoRepository
+     * @param SerializationService $serializationService
      * @Route("/api/container", name="container_index", methods={"GET", "POST", "PUT", "DELETE"})
+     * @return JsonResponse
+     * @throws ExceptionInterface
      */
-    public function index(Request    $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        , AssociationContaRepository $associationContaRepository, AssociationCompoRepository $associationCompoRepository, SerializationService $serializationService, EntityManagerInterface $entityManager): JsonResponse
+
+    public function index(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository,
+                          AssociationContaRepository $associationContaRepository, AssociationCompoRepository $associationCompoRepository,
+                          SerializationService $serializationService): JsonResponse
     {
         $method = $request->getMethod();
         switch ($method) {
@@ -42,16 +53,15 @@ class ContainerController extends AbstractController
                 }
             case 'POST':
                 // Crea una nuova composizione
-                dump('sei in post aggiungi una o più');
+                // dump('sei in post aggiungi una o più');
                 break;
             case 'PUT':
-                dump('sei nel PUT modifica una');
+                // dump('sei nel PUT modifica una');
                 // Aggiorna una composizione esistente
                 break;
             case 'DELETE':
                 $associationsContainerCreators = $associationContaRepository->findBy(['container' => $request->query->get('id')]);
-                $containerEntity = $containerRepository->find($request->query->get('id'))->setIsAssociated(false);
-                $containerRepository->save($containerEntity, true);
+                $containerEntity = $containerRepository->find($request->query->get('id'));
                 $assoCompModified = [];//dump($associationsContainerCreators);dump(count($associationsContainerCreators).'<---');
                 foreach ($associationsContainerCreators as $associationsContainerCreator) { //-->remove container's associations
                     //--> composition in relationship with association container
@@ -65,10 +75,12 @@ class ContainerController extends AbstractController
                     //dump('id composizione'. $compositionModified);
                     $compositionAssociations = $associationCompoRepository->findby(['composition'=> $compositionModified]);
                       if(count($compositionAssociations) === 0){ //-->condition for disassociation
-                        $compositionDisass=$compositionRepository->find($compositionModified)->setIsAssociated(false);
-                        $compositionRepository->save($compositionDisass, true);
+                        $compositionDisass=$compositionRepository->find($compositionModified);
+                        $compositionRepository->remove($compositionDisass, true);
                       }
                 }
+                // $containerRepository->save($containerEntity, true);
+                $containerRepository->remove($containerEntity, true);
                 return new JsonResponse([true]);
         }
                 return new JsonResponse (['errore']);
@@ -78,16 +90,24 @@ class ContainerController extends AbstractController
 
 
     /**
+     * @param Request $request
+     * @param ContainerRepository $containerRepository
+     * @param CreatorRepository $creatorRepository
+     * @param AssociationContaRepository $associationContaRepository
+     * @param GroupRepository $groupRepository
+     * @param SerializationService $serializationService
      * @Route("/api/container/form", name="container_form", methods={"GET", "POST", "PUT", "DELETE"})
+     * @return JsonResponse
+     * @throws ExceptionInterface
      */
-    public function researchForForm(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
+    public function queriesForForm(Request $request, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
        ,AssociationContaRepository $associationContaRepository ,GroupRepository $groupRepository , SerializationService $serializationService): JsonResponse
     {
             $method = $request->getMethod();
             switch ($method) {
                 case 'GET':
                     $text = $request->query->get('text');
-                    dump($serializationService->serialize(['creator'=>$creatorRepository->findByName($text), 'group'=>$groupRepository->findByName($text)],'researchFormContAuthor:read'));
+                    // dump($serializationService->serialize(['creator'=>$creatorRepository->findByName($text), 'group'=>$groupRepository->findByName($text)],'researchFormContAuthor:read'));
                     return new JsonResponse(
                         $serializationService->serialize(
                             ['creator'=>$creatorRepository->findByName($text), 'group'=>$groupRepository->findByName($text)],
@@ -98,7 +118,6 @@ class ContainerController extends AbstractController
                     $containerName = $request->query->get('container');
                     $container->setName($containerName)->setIsAssociated(true);
                     $authorList = json_decode($request->query->get('selectedAuthors'));
-                    dump($authorList);
                     $containerRepository->save($container, true);
                     foreach ($authorList as $item){
                         $association= new AssociationConta();
@@ -117,24 +136,26 @@ class ContainerController extends AbstractController
                     }
                     return new JsonResponse([true]);
                 case 'PUT':
-                    dump('sei nel PUT modifica una');
+                    // dump('sei nel PUT modifica una');
                     // Aggiorna una composizione esistente
                     break;
                 case 'DELETE':
-                    dump('elimina una o forse più vediamo');
+                    // dump('elimina una o forse più vediamo');
                     // Elimina una composizione
                     break;
             }
             return new JsonResponse (['errore']);
     }
 
-
-
     /**
+     * @param Request $request
+     * @param ContainerRepository $containerRepository
+     * @param SerializerInterface $serializerInterface
+     * @param AntiXSS $antiXSS
      * @Route("/api/container/editor", name="container_editor", methods={"GET", "POST", "PUT", "DELETE"})
+     * @return JsonResponse
      */
-    public function researchForEditor(Request $request, CompositionRepository $compositionRepository, ContainerRepository $containerRepository, CreatorRepository $creatorRepository
-        ,SerializationService $serializationService,AssociationCompoRepository $associationCompoRepository, AssociationContaRepository $associationContaRepository ,GroupRepository $groupRepository , SerializerInterface $serializerInterface): JsonResponse
+    public function queriesForEditor(Request $request, ContainerRepository $containerRepository, SerializerInterface $serializerInterface, AntiXSS $antiXSS): JsonResponse
     {
         $method = $request->getMethod();
         switch ($method) {
@@ -153,8 +174,7 @@ class ContainerController extends AbstractController
                         'description',
                         'genre',
                         'label',
-                        'prize_temp',
-                        'photo']
+                        'prize_temp' ]
                 ];
                 $optionDeep = [
                     'circular_reference_handler' => function ($object) {
@@ -183,40 +203,47 @@ class ContainerController extends AbstractController
                     ]
                 ];
 
-
                 foreach (json_decode($serializerInterface->serialize($containerEntity, 'json', $optionDeep))->associationCont as $item){
-
-
                     if(!isset($data['container'])){
                         $data['container'] = json_decode($serializerInterface->serialize($containerEntity,'json', $optionBase));
+                        $photo = $containerEntity->getPhoto();
+                        $data['container']->photo = ($photo == null) ? null : 'data:image/png;base64,'.base64_encode(stream_get_contents($photo));
                     }
-
                     if(!isset($data['compositions'])){
                         $data['compositions'] = $item->assoChain;
                     }
-
                     if($item->team !== null){
                         $data['makers'][] = ['id'=>$item->team->id ,'name'=> $item->team->name,'type' => 'group'];
                     }
                     else if($item->creator !== null){
                         $data['makers'][] = ['id'=>$item->creator->id ,'name'=> $item->creator->name,'type' => 'creator'];
                     }
-
-
-
                 }
-
 
                 return new JsonResponse($serializerInterface->serialize($data,'json'));
             case 'POST':
 
                 return new JsonResponse([true]);
             case 'PUT':
-                dump('sei nel PUT modifica una');
-                // Aggiorna una composizione esistente
+                $data = $request->query->get('data');
+                $containerData = json_decode($data);
+                $containerEntity = $containerRepository->find($containerData->id);
+
+                $containerEntity->setName($containerData->name)
+                    ->setDatePublish(DateTime::createFromFormat('Y-m-d', $containerData->datePublish))
+                    ->setLabel($containerData->label)
+                    ->setDescription($containerData->description);
+
+                if($containerData->photo !== null){
+                    $photoBase64Uri = explode(',', $antiXSS->xss_clean($containerData->photo));
+                    $photoBlob = base64_decode($photoBase64Uri[1]);
+                    $containerEntity->setPhoto($photoBlob);
+                }
+
+                $containerRepository->save($containerEntity, true);
                 break;
             case 'DELETE':
-                dump('elimina una o forse più vediamo');
+                // dump('elimina una o forse più vediamo');
                 // Elimina una composizione
                 break;
         }

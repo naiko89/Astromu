@@ -43,11 +43,11 @@ class Container
     #[ORM\Column]
     private ?bool $isAssociated = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $photo = null;
-
     #[ORM\OneToMany(mappedBy: 'container', targetEntity: AssociationConta::class)]
     private Collection $associationCont;
+
+    #[ORM\Column(type: Types::BLOB, nullable: true)]
+    private $photo = null;
 
     public function __construct()
     {}
@@ -68,7 +68,6 @@ class Container
 
         return $this;
     }
-
 
     public function getDatePublish(): ?\DateTimeInterface
     {
@@ -154,18 +153,6 @@ class Container
         return $this;
     }
 
-    public function getPhoto(): ?string
-    {
-        return $this->photo;
-    }
-
-    public function setPhoto(?string $photo): self
-    {
-        $this->photo = $photo;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, AssociationConta>
      */
@@ -192,6 +179,18 @@ class Container
                 $associationCont->setCreator(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto($photo): self
+    {
+        $this->photo = $photo;
 
         return $this;
     }

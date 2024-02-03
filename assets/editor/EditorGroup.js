@@ -2,7 +2,12 @@ import React from "react";
 import update from "immutability-helper";
 import {Form, Image, ListGroup} from "react-bootstrap";
 import DatePicker from "react-datepicker";
+import FormGroupEditor from "../component/forms/editors/dataDescrEditor/FormGroupEditor";
+import DataListGroup from "../component/lists/editor/DataListGroup";
+import queryString from "query-string";
 
+import Resizer from "react-image-file-resizer";
+import ContextGlobally from "../context/ContextGlobally";
 
 class EditorGroup extends React.Component {
 
@@ -11,21 +16,16 @@ class EditorGroup extends React.Component {
         this.props=props;
         this.state = {
             group:{ id:this.props.groupId, name:'' },
-            form:{ selectedDateOn: null, selectedDateOff: null, name:'', description : '', nation:'', subNation:'', photo:'' },
+            form:{ DateOn: null, DateOff: null, name:'', description : '', nation:'', subNation:'', photo:'', activeMod: true },
             creators:'',
             containers:'',
             compositions:'',
             nations:[
-                { id: 0, label: 'Seleziona una Nazione'},
-                { id: 1, label: 'Italia', value: 'IT' },
-                { id: 2, label: 'Francia', value: 'FR' },
-                { id: 3, label: 'Germania', value: 'DE' }
+                { id: 0, name: 'Seleziona una Nazione', className: null},
+                { id: 118, name: 'Italia', value: 'IT' }
             ],
             subNations:[
-                { id: 0, nationID: 0, label: 'Seleziona una Regione'},
-                { id: 1, nationId: 0, label: 'Veneto', value:"VEN" },
-                { id: 2, nationId: 0, label: 'Lombardia', value:'LOM' },
-                { id: 3, nationId: 0, label: 'Sicilia', value:'SIC' }
+                { id: 0, nationID: 118, name: 'Seleziona una Regione', className: null }
             ],
             handleValues: { trigger:false, textarea:'',id:'', select: false }
         }
@@ -33,10 +33,13 @@ class EditorGroup extends React.Component {
         this.handleDateChangeOn = this.handleDateChangeOn.bind(this);
         this.handleDateChangeOff = this.handleDateChangeOff.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.handleChangeText = this.handleChangeText.bind(this);
+        this.handleChangeForm = this.handleChangeForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggleDataBox = this.toggleDataBox.bind(this);
 
     }
+
+    static contextType = ContextGlobally;
 
     componentDidMount() {
 
@@ -45,194 +48,200 @@ class EditorGroup extends React.Component {
             headers: {'Content-Type': 'application/json'}
         })
             .then(response => response.json())  //--> why the response.json does not give me a JSON object but a string? for that do the parsing later....review this part
-            .then(data => {
-                console.log(data)
+            .then(data => { //console.log(data)
                 data = JSON.parse(data)
                 let tempState = this.state
                 tempState.form = data.group
                 tempState.creators = data.creators
                 tempState.containers = data.containers
+                tempState.subNations = data.support.nations[0].subnations //_>now only for italy one level array
+                tempState.subNations.unshift({ id: 0, nationID: 118, name: 'Seleziona una Regione', className: null})
+                tempState.form.activeMod = (data.group.firstname !== null && data.group.dataOn !== null)
                 this.setState(tempState)
             })
             .catch(error => console.error(error));
 
     }
 
-    handleChangeText(event) {
+    async handleChangeForm(event) {
         const target = event.target
         const name = target.name
         let tempState = this.state
-        const value = target.type === 'file' ? target.files[0] : target.value;
-        tempState['form'][name] = value
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                Resizer.imageFileResizer(
+                    file,
+                    280,
+                    280,
+                    "PNG",
+                    100,
+                    0,
+                    (uri) => {
+                        resolve(uri);
+                    },
+                    "base64",
+                    120,
+                    120
+                );
+
+            })
+        }
+
+        switch (name) {
+            case 'nation':
+            case 'subNation':
+                tempState['form'][name] = { id: target.value }
+                break;
+            case 'photo':
+                tempState['form'][name] = await getBase64(target.files[0]).then((phStr)=>{
+                    return phStr
+                })
+                break;
+            default:
+                tempState['form'][name] = target.value
+                break;
+        }
         this.setState(tempState);
     }
 
     handleDateChangeOn = (date) => {
-        let tempState = this.state;
-        tempState.form.selectedDateOn = date
+        let tempState = this.state
+        tempState.form.dataOn = date
         this.setState(tempState)
     }
 
     handleDateChangeOff = (date) => {
         let tempState = this.state;
-        tempState.form.selectedDateOff = date
+        tempState.form.dataOff = date
+        this.setState(tempState)
+    }
+
+    toggleDataBox(){
+        let tempState = this.state
+        tempState.form.activeMod = !tempState.form.activeMod
         this.setState(tempState)
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        // Qui puoi fare qualcosa con i dati del form
+        let dateOn,dateOff, uriFragment
+        let tempState = this.state
+
+        if(tempState.form.name !== null &&  tempState.form.dataOn !== null  && tempState.form.description !== null && tempState.form.nation && tempState.form.subNation !== null){
+
+            dateOn = new Date(tempState.form.dataOn)
+            tempState.form.dataOn = dateOn.toISOString().substring(0, 10)
+            tempState.form.dataOff = tempState.form.dataOff === null ? '' : new Date(tempState.form.dataOff).toISOString().substring(0, 10)
+            tempState.form.activeMod = true
+            uriFragment = queryString.stringify({data:JSON.stringify(tempState.form)})
+            fetch(`/api/group/editor?${uriFragment}`,{
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'}
+            }).then(response => response.json())
+                .then(data => {
+                    this.setState(tempState)
+                })
+        }
+        else{
+            alert('Non hai inserito i valori necessari')
+        }
     }
 
     render() {
-        let textareaText = this.state.group.description === null ? '' : this.state.group.description
-        let nation = this.state.form.nation === null ? '' : this.state.form.nation
-        let subNation = this.state.form.subNation === null ? '' : this.state.form.subNation
-
-        let subNationsOptions = this.state.subNations.map((subNation) => {
-            return <option key={subNation.id} value={subNation.value}>
-                {subNation.label}
-            </option>
-        }
-        );
-
-        const nationsOptions = this.state.nations.map((nation) => {
-                return <option key={nation.id} value={nation.value}>
-                    {nation.label}
-                </option>
-        }
-        );
-
-
-        let listComponents = Object.values(this.state.creators).map((item, index) => {
-            return <ListGroup.Item key={index} className={'pe-1 small'} value={item.creator.id}>
-                <div className={'row pe-0 me-0'}>
-                    <span className="col-11">{ item.creator.name }</span>
-                    <span className="col-1 p-0 m-0"><i className="bi bi-file-earmark-minus"></i></span>
-                </div>
-            </ListGroup.Item>
-        })
-
-        let listContaners = Object.values(this.state.containers).map((item, index) => {
-            let roleCreator = item.container.associationCont.length === 1 ? 'text-primary' : 'text-success'
-            return <ListGroup.Item key={index} className={'pe-1 small '+roleCreator} value={item.container.id}>
-                <div className={'row pe-0 me-0'}>
-                    <span className="col-11">{ item.container.name }</span>
-                    <span className="col-1 p-0 m-0"><i className="bi bi-file-earmark-minus"></i></span>
-                </div>
-            </ListGroup.Item>
-        })
-
-
-
-
-
-        return(
-            <div className={'container pt-1'}>
+        let listComponent = Object.values(this.state.creators).map((item, index) => {
+            return <ListGroup.Item as='li' key={index} className="align-items-center border-0 border-top text-secondary m-0 pb-0 pt-0">
                 <div className={'row'}>
-                    <div className={'col-sm-12 col-md-4 col-lg-4 me-0 pe-0 ps-0 mb-1'}>
-
-                        <div className={'border p-2'} align={'center'}>
-                            <div className={'row'}>
-                                <div className={'col align-self-center'}>
-                                    <div className={'icon-profile d-flex justify-content-center align-items-center mb-1'}>
-
-                                        <i className="bi bi-people-fill" ></i>
-
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="col-8 me-2 fw-bold">
+                        {item.creator.name}
+                    </div>
+                    <div className={'col-3 fw-bold date-creator-container'}>
+                    </div>
+                </div>
+            </ListGroup.Item>
+        })
 
 
-                            {/* <Image
-                                src={window.location.origin +'/Images/user_grey.png'}
-                                style={{ maxHeight: '150px' }}
-                                className={'border p-2 mb-2'}
-                                rounded
-                            /> */
-                            }
-
-                            <Form onSubmit={this.handleSubmit} className={"text-secondary"}> {/* reactive form with creator's data */}
-                                <Form.Group controlId="formName" className={'mt-1 mb-1'}>
-                                    <Form.Control type="text" name="name" className={'text-secondary'} placeholder={"Nome Gruppo"} value={this.state.form.name} onChange={this.handleChangeText} />
-                                </Form.Group>
-
-                                <Form.Group controlId="formDateOn" className={'mt-1 mb-1'}>
-                                    <DatePicker
-                                        selected={this.state.form.DataOn}
-                                        startDate={this.state.form.DataOn}
-                                        onChange={this.handleDateChangeOn}
-                                        className="form-control form-control-sm text-secondary"
-                                        placeholderText="Seleziona una data di Apertura"
-                                    />
-                                </Form.Group>
-
-                                <Form.Group controlId="formDateOff" className={'mt-1 mb-1'}>
-                                    <DatePicker
-                                        selected={this.state.form.DataOff}
-                                        startDate={this.state.form.DataOff}
-                                        onChange={this.handleDateChangeOff}
-                                        className="form-control form-control-sm text-secondary"
-                                        placeholderText="Seleziona una data di Chiusura"
-                                    />
-                                </Form.Group>
-
-                                <Form.Group controlId="formDescription" className={'mt-1 mb-1'}>
-                                    <Form.Control size="sm" as="textarea" placeholder={'Descrizione Gruppo'} className={'text-secondary'} name="description" value={textareaText} onChange={this.handleChangeText} />
-                                </Form.Group>
-
-                                {/* mast to do add labels and mtype */}
-
-                                <Form.Select size="sm" className={"text-secondary mt-1"} name={'nation'} onChange={this.handleChangeText} value={nation}>
-                                    {nationsOptions}
-                                </Form.Select>
-
-                                <Form.Select size="sm" className={"text-secondary mt-1"} name={'subNation'} onChange={this.handleChangeText} value={subNation}>
-                                    {subNationsOptions}
-                                </Form.Select>
-
-                                <Form.Group controlId="formPhoto" className={'mt-1 mb-1'}>
-                                    <Form.Control type="file" className={'text-secondary'} size="sm" name="photo" label="Carica un'immagine"/>
-                                </Form.Group>
-
-                                <Form.Group>
-                                    <Form.Control type="submit" value={'Salva Gruppo'} className={'btn btn-success'} />
-                                </Form.Group>
-
-                            </Form>
+        let listContainer = Object.values(this.state.containers)
+            .sort((a, b) => {return new Date(a.container.datePublish) - new Date(b.container.datePublish)})
+            .map((item, index) => {
+                let roleCreator = item.container.associationCont.length === 1 ? ' - Solista' : ''
+                let datePub = item.container.datePublish === null ? '' : new Date(item.container.datePublish).toLocaleDateString()
+                return <ListGroup.Item as='li' key={index} className="align-items-center border-0 border-top text-secondary m-0 pb-0 pt-0">
+                    <div className={'row'}>
+                        <div className="col-8 me-2 fw-bold">
+                            {item.container.name}
+                        </div>
+                        <div className={'col-3 fw-bold date-creator-container'}>
+                            {datePub}
                         </div>
                     </div>
-                    <div className={'col-sm-12 col-md-8 col-lg-8 me-0 pe-0 ps-0 mb-1'}>
+                </ListGroup.Item>
+        })
 
-                        <div className={'border row h-100 m-0 p-2'}>
-                            {/* 1- that list are one ot two component (es. listofrelations) eith handlers for all entity*/}
-                            <div className={'col-sm-12 col-md-12 col-lg-5 mb-3'}>
-                                <div className={'row'}>
-                                    <div className={'col-11 me-0 pe-0'}>
-                                        <h5>Componenti del Gruppo <i className="bi bi-plus-circle text-success add-elements-icon"></i></h5>
+
+        let groupBox = this.state.form.activeMod === true ?
+            <DataListGroup data={this.state.form}
+                           nations={this.state.nations}
+                           subNations={this.state.subNations}
+                           toggle={this.toggleDataBox}></DataListGroup> :
+
+            <FormGroupEditor data={this.state.form}
+                             nations={this.state.nations}
+                             subNations={this.state.subNations}
+                             handleChange={this.handleChangeForm}
+                             handleDateChangeOn={this.handleDateChangeOn}
+                             handleDateChangeOff={this.handleDateChangeOff}
+                             handleSubmit={this.handleSubmit}
+                             toggle={this.toggleDataBox}></FormGroupEditor>
+        return(
+            <div className={'container mt-2 p-3 pt-0 container-editor'}>
+                <div className={'row p-0 m-0'}>
+
+
+                    <div className={'col-sm-12 col-md-12 col-lg-4 me-0 pe-1 ps-0 mb-1'}>
+                        {groupBox}
+                    </div>
+                    <div className={'col-sm-12 col-md-12 col-lg-8 me-0 pe-0 ps-0 mb-1'}>
+
+                        <div className={'row h-100 p-0 m-0 '}>
+                            <div className={'col-sm-12 col-md-12 col-lg-6 p-0 m-0 mb-0 pe-1 margin-box-middle'}>
+                                <div className={'border h-100'}>
+                                    <div className={'row p-0 m-0'}>
+                                        <div className={'col-12 me-0 pe-0 title-list border-bottom'}>
+                                            <h5 className={'p-0 m-0 pt-1 pb-1'}>
+                                                {this.context.changes.container.plural}
+                                            </h5>
+                                        </div>
+                                        <div className={'col-1 justify-content-center align-items-center'}></div>
                                     </div>
-                                    <div className={'col-1 justify-content-center align-items-center'}></div>
+                                    <div className="container overflow-auto pt-2">
+                                        <ListGroup as="ol" className={'list-group-flush mx-0 small'}>
+                                            {listContainer}
+                                        </ListGroup>
+                                        <hr className={'mt-0 pt-0 text-secondary'}></hr>
+                                    </div>
                                 </div>
-                                <ListGroup>
-                                    {listComponents}
-                                </ListGroup>
                             </div>
 
-                            <div className={'col-sm-12 col-md-12 col-lg-6'}>
-                                <div className={'row'}>
-                                    <div className={'col-11 me-0 pe-0'}>
-                                        <h5>Contenitori <i className="bi bi-plus-circle text-success add-elements-icon"></i></h5>
+                            <div className={'col-sm-12 col-md-12 col-lg-6 p-0 m-0 mb-0 pe-1'}>
+                                <div className={'border h-100'}>
+                                    <div className={'row p-0 m-0'}>
+                                        <div className={'col-12 me-0 pe-0 title-list border-bottom'}>
+                                            <h5 className={'p-0 m-0 pt-1 pb-1'} >
+                                                Componenti del {this.context.changes.group.name}
+                                            </h5>
+                                        </div>
+                                        <div className={'col-1 justify-content-center align-items-center'}></div>
                                     </div>
-                                    <div className={'col-1 justify-content-center align-items-center'}></div>
+                                    <div className="container overflow-auto pt-2">
+                                        <ListGroup as="ol" className={'list-group-flush mx-0 small'}>
+                                            {listComponent}
+                                        </ListGroup>
+                                        <hr className={'mt-0 pt-0 text-secondary'}></hr>
+                                    </div>
                                 </div>
-                                <ListGroup>
-                                    {listContaners}
-                                </ListGroup>
                             </div>
-                            {/* /-1 */}
-
                         </div>
-
                     </div>
                 </div>
             </div>

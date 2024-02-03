@@ -15,14 +15,12 @@ const ItemComposition = (props) => {
     }
 
     const handleModify = () => {
-        console.log('queste')
-        console.log(props)
-        props.showEditComp(props.value.id)
+        props.showEditComp(props.value.id, props.value.name)
     }
 
 
     return (
-        <li className="col list-unstyled" key={props.value.id}>
+        <li className="col-lg-3 col-md-6 col-sm-12 list-unstyled" key={props.value.id}>
                     <div className="card shadow-sm">
 
                         <div className="card-body">

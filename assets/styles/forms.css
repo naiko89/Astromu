@@ -3,7 +3,6 @@
    height: 250px;
 }
 
-
 .modal-animation{
    animation: fadeIn 0.5s ease-in;
 }
@@ -14,4 +13,49 @@
 
 .item-search-group{
    background-color: #E8F5E9;
+}
+
+.fast-add-head-title{
+   position: absolute;
+   top: -40px;
+   left: calc(50% - 40px);
+   height: 80px;
+   width: 80px;
+   background-color: whitesmoke;
+}
+
+.parent {
+   position: relative;
+   border: 1px solid #000;
+}
+
+.child {
+   position: absolute;
+   top: -15px;
+   left: 5px;
+   background-color: white;
+}
+
+.my-head-creator{
+   background-image: url(../../public/Images/concert.png);
+   background-repeat: no-repeat;
+   background-size: cover;
+   background-position: center;
+   min-height: 200px;
+}
+
+.my-head-group{
+   background-image: url(../../public/Images/group.png);
+   background-repeat: no-repeat;
+   background-size: cover;
+   background-position: center;
+   min-height: 200px;
+}
+
+.my-head-container{
+   background-image: url(../../public/Images/studio.png);
+   background-repeat: no-repeat;
+   background-size: cover;
+   background-position: center;
+   min-height: 200px;
 }
